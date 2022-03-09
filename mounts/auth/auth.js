@@ -19,9 +19,10 @@ app.disable('etag') //Para desactivar los caches (evitando respuesta 304 Not Mod
 
 /* ===================================== Parametros SSL ===================================== */
 var options = { 
-    key: fs.readFileSync('ssl/hellfish.test.key'), 
-    cert: fs.readFileSync('ssl/hellfish.test.crt'), 
-    ca: fs.readFileSync('ssl/myCA.pem'), 
+    key:     fs.readFileSync('ssl/hellfish.test.key'), 
+    cert:    fs.readFileSync('ssl/hellfish.test.crt'), 
+    ca:      fs.readFileSync('ssl/myCA.pem'), 
+    dhparam: fs.readFileSync('ssl/dhparam.pem'), 
 }; 
 
 /* ================== Conexion con la base de datos (hecha con "factory function" warper para usar await) ================== */
