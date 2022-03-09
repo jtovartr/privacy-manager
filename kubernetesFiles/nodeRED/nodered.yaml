@@ -32,7 +32,7 @@ spec:
         - name: test-volume
           hostPath:
             # directory location on host
-            path: /home/manuel/Proyectos/privacy-manager/mounts/nodered
+            path: /home/jesus/Escritorio/privacy-manager/mounts/nodered
             # this field is optional
             type: Directory
 ---

@@ -1,6 +1,7 @@
 /* ===================================== Librerias ===================================== */
 
 var https = require('https')
+var http = require('http')
 var fs = require('fs')
 var helmet = require('helmet') //Para HSTS, necesario anadir
 var mysql = require('mysql')
@@ -17,14 +18,11 @@ app.use(helmet())
 app.disable('etag') //Para desactivar los caches (evitando respuesta 304 Not Modified)
 
 /* ===================================== Parametros SSL ===================================== */
-const options = {
-	key     : fs.readFileSync('ssl/key.pem'),
-	cert    : fs.readFileSync('ssl/auth.pem'),
-	dhparam : fs.readFileSync('ssl/dh-strong-key.pem')
-	//Condiciones para el cliente:
-	//requestCert        : true,
-	//rejectUnauthorized : true
-}
+var options = { 
+    key: fs.readFileSync('ssl/hellfish.test.key'), 
+    cert: fs.readFileSync('ssl/hellfish.test.crt'), 
+    ca: fs.readFileSync('ssl/myCA.pem'), 
+}; 
 
 /* ================== Conexion con la base de datos (hecha con "factory function" warper para usar await) ================== */
 var dbConfig = {

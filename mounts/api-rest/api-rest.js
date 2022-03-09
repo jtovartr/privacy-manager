@@ -1,7 +1,7 @@
 /* ===================================== Librerias ===================================== */
 
-var http = require('http')
 var https = require('https')
+var http = require('http')
 var fs = require('fs')
 var helmet = require('helmet') //Para HSTS, necesario anadir
 var mysql = require('mysql')
@@ -19,21 +19,25 @@ app.use(helmet())
 app.disable('etag') //Para desactivar los caches (evitando respuesta 304 Not Modified)
 
 /* ===================================== Parametros SSL ===================================== */
-const options = {
-	key     : fs.readFileSync('ssl/key.pem'),
-	cert    : fs.readFileSync('ssl/api-rest.pem'),
-	dhparam : fs.readFileSync('ssl/dh-strong-key.pem')
-}
+
+var options = { 
+    key: fs.readFileSync('ssl/hellfish.test.key'), 
+    cert: fs.readFileSync('ssl/hellfish.test.crt'), 
+    ca: fs.readFileSync('ssl/myCA.pem'), 
+}; 
 
 /* ================================= Parametros SSL para parte cliente ================================= */
+
 const agentSSL = new https.Agent({
-	key                 : fs.readFileSync('ssl/key.pem'),
-	cert                : fs.readFileSync('ssl/api-rest.pem'),
+	key                 : fs.readFileSync('ssl/hellfish.test.key'),
+	cert                : fs.readFileSync('ssl/hellfish.test.crt'),
+	ca		     : fs.readFileSync('ssl/myCA.pem'), 
 	//For disabling host ip doesn't match. Remove in production
 	checkServerIdentity : () => undefined
 })
 
 /* ================== Conexion con la base de datos (hecha con "factory function" warper para usar await) ================== */
+
 var con = mysql.createConnection({
 	//host     : '10.152.183.137',
 	host     : 'mysql-master.default.svc.cluster.local',
@@ -45,11 +49,12 @@ var con = mysql.createConnection({
 /* ===================================== Direcciones de modulos ===================================== */
 // -- HTTPS --
 
-//var auth = 'https://10.152.183.201:8081';
-var auth = 'https://auth.default.svc.cluster.local:8081'
+var auth = 'https://10.152.183.201:8081';
+//var auth = 'http://auth.default.svc.cluster.local:8081'
 
-//var priv = 'https://10.152.183.202:8082';
-var priv = 'https://priv.default.svc.cluster.local:8082'
+var priv = 'http://10.152.183.202:8082';
+//var priv = 'http://priv.default.svc.cluster.local:8082'
+
 //Para desarrollar desde local
 //var priv = 'https://192.168.0.193:8082'
 //Para desarrollar en trabajo
@@ -58,7 +63,9 @@ var priv = 'https://priv.default.svc.cluster.local:8082'
 /* ===================================== Creacion del servidor ===================================== */
 const puerto = 8080
 //app.listen(puerto, () => console.log('Servidor http escuchando en puerto ' + puerto));
+//https.createServer(options, app).listen(puerto, () => console.log('Servidor https escuchando en puerto ' + puerto))
 https.createServer(options, app).listen(puerto, () => console.log('Servidor https escuchando en puerto ' + puerto))
+
 
 /* ===================================== GET ===================================== */
 
@@ -146,6 +153,7 @@ app.delete('/', function(req, res) {
 		})
 })
 
+
 /* ===================================== Funciones ===================================== */
 
 /**comprobarToken
@@ -183,8 +191,8 @@ async function envioGETPriv(id, clase, stringQuery) {
 	//Por ahora implementamos el GET
 
 	var respuesta = ''
-	//var priv = 'https://10.152.183.202:8082';
-	//var priv = 'https://priv.default.svc.cluster.local:8082';
+	//var priv = 'http://10.152.183.202:8082';
+	//var priv = 'http://priv.default.svc.cluster.local:8082';
 	var params = {
 		id          : id,
 		clase       : clase,
@@ -195,8 +203,7 @@ async function envioGETPriv(id, clase, stringQuery) {
 
 	await axios
 		.get(priv, {
-			params     : params,
-			httpsAgent : agentSSL
+			params     : params
 		})
 		.then(function(response) {
 			console.log(response.data)
@@ -224,9 +231,7 @@ async function envioPOSTPriv(clase, id, datos) {
 	console.log('Params: ' + JSON.stringify(params))
 
 	await axios
-		.post(priv, params, {
-			httpsAgent : agentSSL
-		})
+		.post(priv, params)
 		.then(function(response) {
 			console.log(response.data)
 			respuesta = response.data
@@ -254,8 +259,7 @@ async function envioDELETEPriv(clase, idUser, idToDelete) {
 
 	await axios
 		.delete(priv, {
-			data       : data,
-			httpsAgent : agentSSL
+			data       : data
 		})
 		.then(function(response) {
 			console.log(response.data)

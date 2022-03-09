@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: arxass-deployment
+  labels:
+    app: arxass
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: arxass
+  template:
+    metadata:
+      labels:
+        app: arxass
+    spec:
+      containers:
+        - name: arxass
+          image: navikt/arxaas
+          ports:
+            - containerPort: 8080
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: arxass
+  namespace: default
+spec:
+  selector:
+    app: arxass
+  ports:
+    - port: 8080
+      targetPort: 8080
+  clusterIP: 10.152.183.204

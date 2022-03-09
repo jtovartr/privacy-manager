@@ -1,51 +1,52 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: priv
+  name: arx
   namespace: default
   labels:
-    app: priv
+    app: arx
     tier: backend
     version: v1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: priv
+      app: arx
   template:
     metadata:
       labels:
-        app: priv
+        app: arx
     spec:
       containers:
-        - name: priv-pod
-          image: roxax19/nodejs:0.3
-          env:
-            - name: NODE_EXTRA_CA_CERTS
-              value: "/node/mount/ssl/myCA.pem"
+        - name: arx-pod
+          image: jtovartr/python3.7:v1
           command:
             - bash
             - "-c"
-            - node priv.js
+            - python3.7 arx.py
           volumeMounts:
-            - mountPath: /node/mount
+            - mountPath: /mount
               name: test-volume
       volumes:
         - name: test-volume
           hostPath:
             # directory location on host
-            path: /home/jesus/Escritorio/privacy-manager/mounts/priv
+            path: /home/jesus/Escritorio/privacy-manager/mounts/arx
             # this field is optional
             type: Directory
 ---
+#Al conector no se conecta nadie, es él el que inicia las conexiones
+#Por lo tanto no le hace falta entrypoint
+
 apiVersion: v1
 kind: Service
 metadata:
-  name: priv
+  name: arx
   namespace: default
 spec:
   selector:
-    app: priv
+    app: arx
   ports:
-    - port: 8082
-  clusterIP: 10.152.183.202
+    - port: 8083
+      targetPort: 8083
+  clusterIP: 10.152.183.205

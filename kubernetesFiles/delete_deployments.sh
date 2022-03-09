@@ -1,6 +1,8 @@
 #!/bin/bash
 
 microk8s.kubectl delete -n default deployment gen
+microk8s.kubectl delete -n default deployment arx
+microk8s.kubectl delete -n default deployment arxass-deployment
 microk8s.kubectl delete -n default deployment api-rest
 microk8s.kubectl delete -n default deployment auth
 microk8s.kubectl delete -n default deployment priv
@@ -12,6 +14,8 @@ microk8s.kubectl delete -n default deployment node-red
 
 
 microk8s.kubectl delete -n default service gen
+microk8s.kubectl delete -n default service arx
+microk8s.kubectl delete -n default service arxass
 microk8s.kubectl delete -n default service api-rest
 microk8s.kubectl delete -n default service auth
 microk8s.kubectl delete -n default service priv

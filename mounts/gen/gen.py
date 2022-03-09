@@ -207,20 +207,24 @@ def script():
     #Intentamos recoger los datos de mysql en vez del csv
     #df = pd.read_csv("./data/k-anonymity/my-adult.all.txt", sep=", ", header=None, names=names, index_col=False, engine='python');
     df = pd.read_sql("select * from personas", mydb)
+    print('----------------TABLA-------------------')
     print(df.head())
-
+        
     for name in categorical:
         df[name] = df[name].astype('category')
 
     full_spans = get_spans(df, df.index)
+    print('----------------SPANS-------------------')
     print(full_spans)
 
     finished_partitions = partition_dataset(df, feature_columns, sensitive_column, full_spans, is_k_anonymous)
+    print('----------------PARTITIONS-------------------')
     print(len(finished_partitions))
 
     indexes = build_indexes(df)
     column_x, column_y = feature_columns[:2]
     rects = get_partition_rects(df, finished_partitions, column_x, column_y, indexes, offsets=[0.0, 0.0])
+    print('----------------RECTS-------------------')
     print(rects[:10])
 
     # Para que no muestre graficas
@@ -232,10 +236,12 @@ def script():
     # pl.show()
 
     dfn = build_anonymized_dataset(df, finished_partitions, feature_columns, sensitive_column)
+    print('----------------DFN-------------------')
     print(dfn.sort_values(feature_columns+[sensitive_column]))
 
     finished_l_diverse_partitions = partition_dataset(df, feature_columns, sensitive_column, full_spans, lambda *args: is_k_anonymous(*args) and is_l_diverse(*args))
 
+    print('----------------L-DIVERSE-------------------')
     print(len(finished_l_diverse_partitions))
 
     column_x, column_y = feature_columns[:2]
@@ -251,7 +257,8 @@ def script():
     # pl.show()
 
     dfl = build_anonymized_dataset(df, finished_l_diverse_partitions, feature_columns, sensitive_column)
-
+    
+    print('----------------SORT-------------------')
     print(dfl.sort_values([column_x, column_y, sensitive_column]))
 
     global_freqs = {}
@@ -260,23 +267,29 @@ def script():
     for value, count in group_counts.to_dict().items():
         p = count/total_count
         global_freqs[value] = p
-
+    
+    print('----------------FREQS-------------------')
     print(global_freqs)
 
     finished_t_close_partitions = partition_dataset(df, feature_columns, sensitive_column, full_spans, lambda *args: is_k_anonymous(*args) and is_t_close(*args, global_freqs))
 
+    print('----------------T-CLOSE-------------------')
     print(len(finished_t_close_partitions))
 
     dft = build_anonymized_dataset(df, finished_t_close_partitions, feature_columns, sensitive_column)
 
     # out es el string json
     out = dft.to_json(orient='index')
-
+    
+    print('----------------DFT-------------------')
     print(dft.sort_values([column_x, column_y, sensitive_column]))
 
     column_x, column_y = feature_columns[:2]
     t_close_rects = get_partition_rects(df, finished_t_close_partitions, column_x, column_y, indexes, offsets=[0.0, 0.0])
 
+    print('----------------OUT-------------------')
+    print(out)
+    
     # Para que no muestre graficas
 
     # pl.figure(figsize=(20,20))

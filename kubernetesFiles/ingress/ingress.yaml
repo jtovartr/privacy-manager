@@ -1,5 +1,5 @@
-apiVersion: extensions/v1beta1
-#apiVersion: networking.k8s.io/v1
+#apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: k8s-ingress
@@ -16,17 +16,26 @@ spec:
   - http:
       paths:
         - path: /api-rest
+          pathType: Prefix
           backend:
-            serviceName: api-rest
-            servicePort: 8080
+            service:
+              name: api-rest
+              port: 
+                number: 8080
         - path: /auth
+          pathType: Prefix
           backend:
-            serviceName: auth
-            servicePort: 8081
+            service:
+              name: auth
+              port: 
+                number: 8081
         - path: /northbound
+          pathType: Prefix
           backend:
-            serviceName: node-red
-            servicePort: 1880
+            service:
+              name: node-red
+              port: 
+                number: 1880
 ---
 #HAY QUE MDIFICAR ESTAS LINEAS EN /snap/microk8s/(NUM)/action/ingress.yaml
 

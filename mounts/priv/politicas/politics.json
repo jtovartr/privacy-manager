@@ -59,6 +59,19 @@
 			]
 		},
 		{
+			"action_type": "GET",
+			"privacy_method": "KAnonimity",
+			"resource": "SELECT enfermedad, temperatura, pulso FROM personas",
+			"conditions": [
+				{
+					"requester": {
+						"role": "admin",
+						"max_requests": "30"
+					}
+				}
+			]
+		},
+		{
 			"action_type": "PUSH",
 			"conditions": [
 				{
@@ -66,7 +79,7 @@
 						"role": "admin"
 					},
 					"context": {
-						"timeofday": "1:00 - 23:00"
+						"timeofday": "01:00 - 23:00"
 					}
 				},
 				{
@@ -90,7 +103,7 @@
 						"max_requests": "1"
 					},
 					"context": {
-						"timeofday": "1:00 - 23:00"
+						"timeofday": "01:00 - 23:00"
 					}
 				}
 			]

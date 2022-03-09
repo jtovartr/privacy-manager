@@ -1,6 +1,7 @@
 /* ===================================== Librerias ===================================== */
 
-const https = require('https')
+//const https = require('https')
+const http = require('http');
 const fs = require('fs')
 const path = require('path')
 const helmet = require('helmet') //Para HSTS, necesario anadir
@@ -23,6 +24,7 @@ app.use(helmet())
 app.disable('etag') //Para desactivar los caches (evitando respuesta 304 Not Modified)
 
 /* ===================================== Parametros SSL ===================================== */
+
 const options = {
 	key     : fs.readFileSync('ssl/key.pem'),
 	cert    : fs.readFileSync('ssl/priv.pem'),
@@ -34,12 +36,13 @@ const options = {
 }
 
 /* ================================= Parametros SSL para parte cliente ================================= */
+/*
 const agentSSL = new https.Agent({
 	key  : fs.readFileSync('ssl/key.pem'),
 	cert : fs.readFileSync('ssl/priv.pem')
 })
-
-const agent = new https.Agent({})
+*/
+//const agent = new https.Agent({})
 
 /* ================== Conexion con la base de datos (hecha con "factory function" warper para usar await) ================== */
 var dbConfig = {
@@ -71,11 +74,12 @@ var con = makeDb(dbConfig)
 
 // -- HTTP --
 var gen = 'http://10.152.183.203:8083'
+var arx = 'http://10.152.183.205:8083'
 
 /* ===================================== Creacion del servidor ===================================== */
 const puerto = 8082
 //app.listen(puerto, () => console.log('Servidor escuchando en puerto ' + puerto));
-https.createServer(options, app).listen(puerto, () => console.log('Servidor escuchando en puerto ' + puerto))
+http.createServer(app).listen(puerto, () => console.log('Servidor escuchando en puerto ' + puerto))
 
 /* ===================================== Lectura configuracion ===================================== */
 const configPath = path.join(__dirname, 'politicas')
@@ -525,15 +529,22 @@ async function querysAVistas(claseUsuario, queryUsuario) {
 			if (politics[claseUsuario].rules[i].privacy_method == 'Generalization' && columnasArray[0] != '*') {
 				allow = false
 			}
+			//Si es KAnonimity y no es *, no enviamos la query
+			if (politics[claseUsuario].rules[i].privacy_method == 'KAnonimity' && columnasArray[0] != '*') {
+				allow = false
+			}
 			if (allow) {
 				console.log('querys que se mandan: ' + 'SELECT ' + columnasArray + ' FROM `' + nombreTablaString + '`')
 
 				try {
 					if (columnasArray[0] == '*') {
 						var resultado = await con.query('SELECT * FROM ??', nombreTablaString)
+						console.log(resultado)
+						console.log('______________________________________')
 					}
 					else {
 						var resultado = await con.query('SELECT ?? FROM ??', [ columnasArray, nombreTablaString ])
+						console.log(resultado)
 					}
 				} catch (err) {
 					console.log(err)
@@ -630,6 +641,61 @@ async function procesarDatos(datos) {
 				//Dado que en un futuro quitaremos esta conexion, la dejamos sin ssl
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
 				var response = await axios.get(gen)
+				datosProcesados.push({
+					privacy_method  : datos[i].privacy_method,
+					datosProcesados : response.data
+				})
+			} catch (error) {
+				console.log(error)
+			}
+		}
+		else if (datos[i].privacy_method == 'KAnonimity') {
+			//Hacemos llamada al modulo de KAnonimity
+			try {
+				//Dado que en un futuro quitaremos esta conexion, la dejamos sin ssl
+				//var response = await axios.get(gen, { httpsAgent: agentSSL })
+				var response = await axios.get(arx, {
+					params: {
+						method: 'KAnonimity'
+					}
+				})
+				datosProcesados.push({
+					privacy_method  : datos[i].privacy_method,
+					datosProcesados : response.data
+				})
+			} catch (error) {
+				console.log(error)
+			}
+		}
+		else if (datos[i].privacy_method == 'LDiversity') {
+			//Hacemos llamada al modulo de LDiversity
+			try {
+				//Dado que en un futuro quitaremos esta conexion, la dejamos sin ssl
+				//var response = await axios.get(gen, { httpsAgent: agentSSL })
+				var response = await axios.get(arx, {
+					params: {
+						method: 'LDiversity'
+					}
+				})
+				datosProcesados.push({
+					privacy_method  : datos[i].privacy_method,
+					datosProcesados : response.data
+				})
+			} catch (error) {
+				console.log(error)
+			}
+		}
+		
+		else if (datos[i].privacy_method == 'TCloseness') {
+			//Hacemos llamada al modulo de KAnonimity
+			try {
+				//Dado que en un futuro quitaremos esta conexion, la dejamos sin ssl
+				//var response = await axios.get(gen, { httpsAgent: agentSSL })
+				var response = await axios.get(arx, {
+					params: {
+						method: 'TCloseness'
+					}
+				})
 				datosProcesados.push({
 					privacy_method  : datos[i].privacy_method,
 					datosProcesados : response.data

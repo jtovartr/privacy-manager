@@ -23,7 +23,7 @@ spec:
         - name: config-volume
           hostPath:
             # directory location on host
-            path: /home/manuel/Proyectos/privacy-manager/mounts/mosquitto
+            path: /home/jesus/Escritorio/privacy-manager/mounts/mosquitto
             # this field is optional
             type: Directory
 ---

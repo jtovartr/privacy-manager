@@ -36,7 +36,7 @@ spec:
         - name: test-volume
           hostPath:
             # directory location on host
-            path: /home/manuel/Proyectos/privacy-manager/mounts/api-rest
+            path: /home/jesus/Escritorio/privacy-manager/mounts/api-rest
             # this field is optional
             type: Directory
 ---

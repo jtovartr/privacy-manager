@@ -27,6 +27,6 @@ spec:
         - name: test-volume
           hostPath:
             # directory location on host
-            path: /home/manuel/Proyectos/privacy-manager/mounts/connector
+            path: /home/jesus/Escritorio/privacy-manager/mounts/connector
             # this field is optional
             type: Directory
