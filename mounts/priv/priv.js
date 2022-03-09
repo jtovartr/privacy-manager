@@ -1,6 +1,6 @@
 /* ===================================== Librerias ===================================== */
 
-//const https = require('https')
+const https = require('https')
 const http = require('http');
 const fs = require('fs')
 const path = require('path')
@@ -25,24 +25,25 @@ app.disable('etag') //Para desactivar los caches (evitando respuesta 304 Not Mod
 
 /* ===================================== Parametros SSL ===================================== */
 
-const options = {
-	key     : fs.readFileSync('ssl/key.pem'),
-	cert    : fs.readFileSync('ssl/priv.pem'),
-	dhparam : fs.readFileSync('ssl/dh-strong-key.pem'),
-	ca      : fs.readFileSync('ssl/myCA.key')
-	//Condiciones para el cliente:
-	//requestCert        : true,
-	//rejectUnauthorized : true
-}
+var options = { 
+    key:     fs.readFileSync('ssl/hellfish.test.key'), 
+    cert:    fs.readFileSync('ssl/hellfish.test.crt'), 
+    ca:      fs.readFileSync('ssl/myCA.pem'), 
+    dhparam: fs.readFileSync('ssl/dhparam.pem'), 
+    //Condiciones para el cliente:
+    //requestCert        : true,
+    //rejectUnauthorized : true
+}; 
 
 /* ================================= Parametros SSL para parte cliente ================================= */
-/*
+
 const agentSSL = new https.Agent({
-	key  : fs.readFileSync('ssl/key.pem'),
-	cert : fs.readFileSync('ssl/priv.pem')
+	key                 : fs.readFileSync('ssl/hellfish.test.key'),
+	cert                : fs.readFileSync('ssl/hellfish.test.crt'),
+	ca		     : fs.readFileSync('ssl/myCA.pem'),
 })
-*/
-//const agent = new https.Agent({})
+
+const agent = new https.Agent({})
 
 /* ================== Conexion con la base de datos (hecha con "factory function" warper para usar await) ================== */
 var dbConfig = {
@@ -79,7 +80,7 @@ var arx = 'http://10.152.183.205:8083'
 /* ===================================== Creacion del servidor ===================================== */
 const puerto = 8082
 //app.listen(puerto, () => console.log('Servidor escuchando en puerto ' + puerto));
-http.createServer(app).listen(puerto, () => console.log('Servidor escuchando en puerto ' + puerto))
+https.createServer(options, app).listen(puerto, () => console.log('Servidor escuchando en puerto ' + puerto))
 
 /* ===================================== Lectura configuracion ===================================== */
 const configPath = path.join(__dirname, 'politicas')

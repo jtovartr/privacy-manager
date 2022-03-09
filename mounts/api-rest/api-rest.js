@@ -53,8 +53,8 @@ var con = mysql.createConnection({
 //var auth = 'https://10.152.183.201:8081';
 var auth = 'https://auth.default.svc.cluster.local:8081'
 
-var priv = 'http://10.152.183.202:8082';
-//var priv = 'http://priv.default.svc.cluster.local:8082'
+//var priv = 'http://10.152.183.202:8082';
+var priv = 'https://priv.default.svc.cluster.local:8082'
 
 //Para desarrollar desde local
 //var priv = 'https://192.168.0.193:8082'
@@ -204,7 +204,8 @@ async function envioGETPriv(id, clase, stringQuery) {
 
 	await axios
 		.get(priv, {
-			params     : params
+			params     : params,
+			httpsAgent : agentSSL
 		})
 		.then(function(response) {
 			console.log(response.data)
@@ -232,7 +233,9 @@ async function envioPOSTPriv(clase, id, datos) {
 	console.log('Params: ' + JSON.stringify(params))
 
 	await axios
-		.post(priv, params)
+		.post(priv, params, {
+			httpsAgent : agentSSL
+		})
 		.then(function(response) {
 			console.log(response.data)
 			respuesta = response.data
@@ -260,7 +263,8 @@ async function envioDELETEPriv(clase, idUser, idToDelete) {
 
 	await axios
 		.delete(priv, {
-			data       : data
+			data       : data,
+			httpsAgent : agentSSL
 		})
 		.then(function(response) {
 			console.log(response.data)
