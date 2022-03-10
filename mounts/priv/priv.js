@@ -74,8 +74,8 @@ var con = makeDb(dbConfig)
 //var gen = 'https://gen.default.svc.cluster.local:8083';
 
 // -- HTTP --
-var gen = 'http://10.152.183.203:8083'
-var arx = 'http://10.152.183.205:8083'
+var gen = 'https://10.152.183.203:8083'
+var arx = 'https://10.152.183.205:8083'
 
 /* ===================================== Creacion del servidor ===================================== */
 const puerto = 8082
@@ -641,7 +641,8 @@ async function procesarDatos(datos) {
 			try {
 				//Dado que en un futuro quitaremos esta conexion, la dejamos sin ssl
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
-				var response = await axios.get(gen)
+				var response = await axios.get(gen, { httpsAgent : agentSSL })
+
 				datosProcesados.push({
 					privacy_method  : datos[i].privacy_method,
 					datosProcesados : response.data
@@ -657,7 +658,8 @@ async function procesarDatos(datos) {
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
 				var response = await axios.get(arx, {
 					params: {
-						method: 'KAnonimity'
+						method: 'KAnonimity',
+						httpsAgent : agentSSL
 					}
 				})
 				datosProcesados.push({
@@ -675,7 +677,8 @@ async function procesarDatos(datos) {
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
 				var response = await axios.get(arx, {
 					params: {
-						method: 'LDiversity'
+						method: 'LDiversity',
+						httpsAgent : agentSSL
 					}
 				})
 				datosProcesados.push({
@@ -694,7 +697,8 @@ async function procesarDatos(datos) {
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
 				var response = await axios.get(arx, {
 					params: {
-						method: 'TCloseness'
+						method: 'TCloseness',
+						httpsAgent : agentSSL
 					}
 				})
 				datosProcesados.push({
