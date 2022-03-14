@@ -21,32 +21,6 @@
 		},
 		{
 			"action_type": "GET",
-			"privacy_method": "MaxNoise",
-			"resource": "SELECT profesion, sueldo FROM personas",
-			"conditions": [
-				{
-					"requester": {
-						"role": "admin",
-						"max_requests": "30"
-					}
-				}
-			]
-		},
-		{
-			"action_type": "GET",
-			"privacy_method": "MinNoise",
-			"resource": "SELECT enfermedad, temperatura, pulso FROM personas",
-			"conditions": [
-				{
-					"requester": {
-						"role": "admin",
-						"max_requests": "30"
-					}
-				}
-			]
-		},
-		{
-			"action_type": "GET",
 			"privacy_method": "Generalization",
 			"resource": "SELECT enfermedad, temperatura, pulso FROM personas",
 			"conditions": [
@@ -61,7 +35,7 @@
 		{
 			"action_type": "GET",
 			"privacy_method": "KAnonimity",
-			"resource": "SELECT enfermedad, temperatura, pulso FROM personas",
+			"resource": "enfermedad, temperatura, pulso",
 			"conditions": [
 				{
 					"requester": {

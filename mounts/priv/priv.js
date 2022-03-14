@@ -43,8 +43,6 @@ const agentSSL = new https.Agent({
 	ca		     : fs.readFileSync('ssl/myCA.pem'),
 })
 
-const agent = new https.Agent({})
-
 /* ================== Conexion con la base de datos (hecha con "factory function" warper para usar await) ================== */
 var dbConfig = {
 	host     : '10.152.183.137', //mysql master
@@ -74,8 +72,8 @@ var con = makeDb(dbConfig)
 //var gen = 'https://gen.default.svc.cluster.local:8083';
 
 // -- HTTP --
-var gen = 'https://10.152.183.203:8083'
-var arx = 'https://10.152.183.205:8083'
+var gen = 'http://10.152.183.203:8083'
+var arx = 'http://10.152.183.205:8083'
 
 /* ===================================== Creacion del servidor ===================================== */
 const puerto = 8082
@@ -140,7 +138,7 @@ app.get('/', async function(req, res) {
 
 		//Despues realizamos las querys a las diferentes vistas que tenga el usuario disponibles
 		var datos = await querysAVistas(req.query.clase, req.query.stringQuery)
-
+		
 		//Ahora enviamos los datos a cada funcion segun el metodo asignado
 		var datosProcesados = await procesarDatos(datos)
 
@@ -541,7 +539,6 @@ async function querysAVistas(claseUsuario, queryUsuario) {
 					if (columnasArray[0] == '*') {
 						var resultado = await con.query('SELECT * FROM ??', nombreTablaString)
 						console.log(resultado)
-						console.log('______________________________________')
 					}
 					else {
 						var resultado = await con.query('SELECT ?? FROM ??', [ columnasArray, nombreTablaString ])
@@ -553,6 +550,7 @@ async function querysAVistas(claseUsuario, queryUsuario) {
 
 				resultadoFinal.push({
 					privacy_method : politics[claseUsuario].rules[i].privacy_method,
+					resource     : politics[claseUsuario].rules[i].resource,
 					datosSQL       : resultado
 				})
 			}
@@ -641,7 +639,7 @@ async function procesarDatos(datos) {
 			try {
 				//Dado que en un futuro quitaremos esta conexion, la dejamos sin ssl
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
-				var response = await axios.get(gen, { httpsAgent : agentSSL })
+				var response = await axios.get(gen)
 
 				datosProcesados.push({
 					privacy_method  : datos[i].privacy_method,
@@ -653,13 +651,15 @@ async function procesarDatos(datos) {
 		}
 		else if (datos[i].privacy_method == 'KAnonimity') {
 			//Hacemos llamada al modulo de KAnonimity
-			try {
+			try {	
+				console.log("***************** Mostrando resource **************************************")
+				console.log(datos[i].resource)
 				//Dado que en un futuro quitaremos esta conexion, la dejamos sin ssl
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
 				var response = await axios.get(arx, {
 					params: {
 						method: 'KAnonimity',
-						httpsAgent : agentSSL
+						attributes: datos[i].resource
 					}
 				})
 				datosProcesados.push({
@@ -677,8 +677,7 @@ async function procesarDatos(datos) {
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
 				var response = await axios.get(arx, {
 					params: {
-						method: 'LDiversity',
-						httpsAgent : agentSSL
+						method: 'LDiversity'
 					}
 				})
 				datosProcesados.push({
@@ -697,8 +696,7 @@ async function procesarDatos(datos) {
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
 				var response = await axios.get(arx, {
 					params: {
-						method: 'TCloseness',
-						httpsAgent : agentSSL
+						method: 'TCloseness'
 					}
 				})
 				datosProcesados.push({

@@ -313,5 +313,5 @@ api.add_resource(General, '/')
 
 if __name__ == '__main__':
     #app.run(port='8083', ssl_context=('ssl/gen.pem', 'ssl/key.pem'))
-    app.run(host='0.0.0.0',port='8083', ssl_context=('ssl/hellfish.test.crt', 'ssl/hellfish.test.key'))
-    #app.run(host='0.0.0.0',port='8083')
+    #app.run(host='0.0.0.0',port='8083', ssl_context=('ssl/hellfish.test.crt', 'ssl/hellfish.test.key'))
+    app.run(host='0.0.0.0',port='8083')
