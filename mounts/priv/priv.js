@@ -550,7 +550,7 @@ async function querysAVistas(claseUsuario, queryUsuario) {
 
 				resultadoFinal.push({
 					privacy_method : politics[claseUsuario].rules[i].privacy_method,
-					resource     : politics[claseUsuario].rules[i].resource,
+					attributes     : politics[claseUsuario].rules[i].attributes,
 					datosSQL       : resultado
 				})
 			}
@@ -652,14 +652,12 @@ async function procesarDatos(datos) {
 		else if (datos[i].privacy_method == 'KAnonimity') {
 			//Hacemos llamada al modulo de KAnonimity
 			try {	
-				console.log("***************** Mostrando resource **************************************")
-				console.log(datos[i].resource)
 				//Dado que en un futuro quitaremos esta conexion, la dejamos sin ssl
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
 				var response = await axios.get(arx, {
 					params: {
 						method: 'KAnonimity',
-						attributes: datos[i].resource
+						attributes: datos[i].attributes
 					}
 				})
 				datosProcesados.push({
@@ -677,7 +675,8 @@ async function procesarDatos(datos) {
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
 				var response = await axios.get(arx, {
 					params: {
-						method: 'LDiversity'
+						method: 'LDiversity',
+						attributes: datos[i].attributes
 					}
 				})
 				datosProcesados.push({
@@ -696,7 +695,8 @@ async function procesarDatos(datos) {
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
 				var response = await axios.get(arx, {
 					params: {
-						method: 'TCloseness'
+						method: 'TCloseness',
+						attributes: datos[i].attributes
 					}
 				})
 				datosProcesados.push({

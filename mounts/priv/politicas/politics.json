@@ -34,8 +34,17 @@
 		},
 		{
 			"action_type": "GET",
-			"privacy_method": "KAnonimity",
-			"resource": "enfermedad, temperatura, pulso",
+			"privacy_method": "LDiversity",
+			"resource": "SELECT enfermedad, temperatura, pulso FROM personas",
+			"attributes": [
+				{
+					"identifying": "nombre",
+					"quasiidentifying": "edad, sueldo, lat, lon",
+					"insensitive": "profesion, pulso, id, temperatura",
+					"sensitive": "enfermedad",
+					"level": "2"
+				}
+			],
 			"conditions": [
 				{
 					"requester": {
