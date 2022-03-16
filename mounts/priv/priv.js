@@ -654,6 +654,8 @@ async function procesarDatos(datos) {
 			try {	
 				//Dado que en un futuro quitaremos esta conexion, la dejamos sin ssl
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
+				
+				// Se pasa como parámetros tanto el método de privatización como el tipo de los datos
 				var response = await axios.get(arx, {
 					params: {
 						method: 'KAnonimity',
@@ -673,6 +675,8 @@ async function procesarDatos(datos) {
 			try {
 				//Dado que en un futuro quitaremos esta conexion, la dejamos sin ssl
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
+				
+				// Se pasa como parámetros tanto el método de privatización como el tipo de los datos
 				var response = await axios.get(arx, {
 					params: {
 						method: 'LDiversity',
@@ -693,6 +697,8 @@ async function procesarDatos(datos) {
 			try {
 				//Dado que en un futuro quitaremos esta conexion, la dejamos sin ssl
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
+				
+				// Se pasa como parámetros tanto el método de privatización como el tipo de los datos
 				var response = await axios.get(arx, {
 					params: {
 						method: 'TCloseness',
