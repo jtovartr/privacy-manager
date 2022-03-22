@@ -32,8 +32,8 @@ def script(method, attributes):
 	# ----------------------------------------------------#
 
 	mydb = mysql.connector.connect(
-	host="10.152.183.232", #mysql read
-	#host="mysql-master.default.svc.cluster.local",
+	#host="10.152.183.232", #mysql read
+	host="mysql-master.default.svc.cluster.local",
 	port="3306",
 	user="root",
 	passwd="",
@@ -308,6 +308,7 @@ def script(method, attributes):
 			interval_hierarchy_pulso = arxaas.hierarchy(interval_based_pulso, pulsos)
 			dataset.set_hierarchy("pulso", interval_hierarchy_pulso)
 			
+		"""
 		elif i=='enfermedad':
 			# ------------------- ENFERMEDAD -----------------------#
 			
@@ -334,7 +335,7 @@ def script(method, attributes):
 
 			order_hierarchy = arxaas.hierarchy(order_based, enfermedades)
 			dataset.set_hierarchy("enfermedad", order_hierarchy)
-			
+		"""
 			
 		#elif i=='profesion':
 			# -------------------- PROFESION -----------------------#	

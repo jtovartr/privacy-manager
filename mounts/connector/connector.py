@@ -66,14 +66,16 @@ client.on_message = on_message
 # Nos conectamos con el broker
 print("Me intento conectar")
 client.connect("10.152.183.240", 1883, 60)
+client.connect("mosquitto-broker.default.svc.cluster.local", 1883, 60)
 
 # Nos conectamos a la base de datos
 mydb = mysql.connector.connect(
-  host="10.152.183.137", #master
-  port="3306",
-  user="root",
-  passwd="",
-  database="test"
+  #host="10.152.183.137", #master
+	host="mysql-master.default.svc.cluster.local",
+	port="3306",
+	user="root",
+	passwd="",
+	database="test"
 )
 
 #creamos el cursor

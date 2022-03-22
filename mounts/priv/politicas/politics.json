@@ -39,8 +39,8 @@
 			"attributes": [
 				{
 					"identifying": "nombre",
-					"quasiidentifying": "enfermedad",
-					"insensitive": "profesion, id, edad, lat, lon, pulso, temperatura, sueldo",
+					"quasiidentifying": "temperatura, pulso",
+					"insensitive": "profesion, id, edad, lat, lon, sueldo, enfermedad",
 					"level": "3"
 				}
 			],

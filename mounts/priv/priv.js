@@ -45,8 +45,8 @@ const agentSSL = new https.Agent({
 
 /* ================== Conexion con la base de datos (hecha con "factory function" warper para usar await) ================== */
 var dbConfig = {
-	host     : '10.152.183.137', //mysql master
-	//host   : 'mysql-master.default.svc.cluster.local',
+	//host     : '10.152.183.137', //mysql master
+	host   : 'mysql-master.default.svc.cluster.local',
 	user     : 'root',
 	password : '',
 	database : 'test'
@@ -72,8 +72,11 @@ var con = makeDb(dbConfig)
 //var gen = 'https://gen.default.svc.cluster.local:8083';
 
 // -- HTTP --
-var gen = 'http://10.152.183.203:8083'
-var arx = 'http://10.152.183.205:8083'
+//var gen = 'http://10.152.183.203:8083'
+//var arx = 'http://10.152.183.205:8083'
+
+var gen = 'http://gen.default.svc.cluster.local:8083'
+var arx = 'http://arx.default.svc.cluster.local:8083'
 
 /* ===================================== Creacion del servidor ===================================== */
 const puerto = 8082
