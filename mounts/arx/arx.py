@@ -20,15 +20,15 @@ api = Api(app)
 
 def script(method, attributes):
 	
-	flag_identifying = False
-	flag_quasiidentifying = False
-	flag_insensitive = False
-	flag_sensitive = False
+	flag_identifying = False #To find out if there is an identifying attribute
+	flag_quasiidentifying = False #To find out if there is an quasiidentifying attribute
+	flag_insensitive = False #To find out if there is an insensitive attribute
+	flag_sensitive = False #To find out if there is an sensitive attribute
 	
-	count = 0 # Numero de atributos 
+	count = 0 # Number of attributes 
 
 	# ----------------------------------------------------#
-	#		CONEXIÓN CON LA BASE DE DATOS		
+	#		CONNECTION TO THE DATABASE			
 	# ----------------------------------------------------#
 
 	mydb = mysql.connector.connect(
@@ -40,25 +40,25 @@ def script(method, attributes):
 	database="test"
 	)
 
-	# Consulta a la base de datos
+	# Database query
 	df = pd.read_sql("select * from personas", mydb)
 
-	# Transformación de los datos obtenidos a Dataset
+	# Transformation of the obtained data into Dataset
 	dataset = Dataset.from_pandas(df)
 
 
 	# ----------------------------------------------------#
-	#    SEPARACIÓN Y ASIGNACIÓN DE ATRIBUTOS POR TIPO	
+	#    SEPARATION AND ASSIGNMENT OF ATTRIBUTES BY TYPE	
 	# ----------------------------------------------------#
 
 	attributes = json.loads(attributes)
 	
-	# Se recorren todos los atributos que existen en la estructura attributes 
-	# para poder identificar que tipos existen
+	# All the attributes that exist in the attributes variable are processed 
+	# in order to identify what types of attributes exist. 
 	for key in attributes:
 	
-		# Si el atributo es identiying, se separan todos estos en una nueva 
-		# estructura que se recorre para asignarle dicho tipo dentro del Dataset
+		# If the attribute is identiying, all of them are separated in a new structure 
+		# that is processed to assign that type in the Dataset.
 		if key == 'identifying':
 			flag_identifying = True
 			identifying = attributes['identifying'].split(sep=", ")
@@ -66,8 +66,8 @@ def script(method, attributes):
 				dataset.set_attribute_type(AttributeType.IDENTIFYING, i)
 				count+=1
 				
-		# Si el atributo es quasiidentifying, se separan todos estos en una nueva 
-		# estructura que se recorre para asignarle dicho tipo dentro del Dataset
+		# If the attribute is quasiidentifying, all of them are separated in a new structure 
+		# that is processed to assign that type in the Dataset.
 		elif key == 'quasiidentifying':
 			flag_quasiidentifying = True
 			quasiidentifying = attributes['quasiidentifying'].split(sep=", ")
@@ -75,8 +75,8 @@ def script(method, attributes):
 				dataset.set_attribute_type(AttributeType.QUASIIDENTIFYING, i)
 				count+=1
 				
-		# Si el atributo es insensitive, se separan todos estos en una nueva 
-		# estructura que se recorre para asignarle dicho tipo dentro del Dataset		
+		# If the attribute is insensitive, all of them are separated in a new structure 
+		# that is processed to assign that type in the Dataset.		
 		elif key == 'insensitive':
 			flag_insensitive = True
 			insensitive = attributes['insensitive'].split(sep=", ")
@@ -84,8 +84,8 @@ def script(method, attributes):
 				dataset.set_attribute_type(AttributeType.INSENSITIVE, i)
 				count+=1
 				
-		# Si el atributo es sensitive, se separan todos estos en una nueva 
-		# estructura que se recorre para asignarle dicho tipo dentro del Dataset	
+		# If the attribute is sensitive, all of them are separated in a new structure 
+		# that is processed to assign that type in the Dataset.	
 		elif key == 'sensitive':
 			flag_sensitive = True
 			sensitive = attributes['sensitive'].split(sep=", ")
@@ -94,35 +94,40 @@ def script(method, attributes):
 				count+=1
 		
 
-	# Conexión con el servicio de ARXaaS
+	# Connection to ARXaaS service
 	arxaas = ARXaaS("http://10.152.183.204:8080")
 
-	# Comprobamos que el número de atributos pasado como parámetros no sea menor al número de atributos
-	# de la base de datos, ya que esto lanzará un error. Por defecto, si no se especifica el tipo de 
-	# un atributo este será QUASIIDENTIFYING, por lo que al no tener jerarquía creada generará un error
-	# a la hora de privatizar el dataset
+	# We check that the number of attributes passed as parameters is not less than 
+	# the number of attributes in the database, as this will throw an error. By default, 
+	# if the type of an attribute is not specified it will be QUASIIDENTIFYING, so if there 
+	# is no hierarchy created it will generate an error when the dataset is privatized.
 	if count != 10:
-		return '{ "Error":"No se ha podido privatizar los datos: Has introducido un número de atributos que no se corresponde con los de la base de datos"}'
+		return '{ "Error":"The data could not be privatized: You have entered a number of attributes that does not correspond to those in the database."}'
 	
-	# Comprobamos que existen atributos quasiidentifying. Si estos no existen acaba la ejecucion
+	# We check that quasiidentifying attributes exist. If these do not exist, the execution ends.
 	if flag_quasiidentifying == False:
-		return '{ "Error":"No se ha podido privatizar los datos: Se necesita especificar al menos un atributo quasiidentificativo"}'
+		return '{ "Error":"Failed to privatize data: At least one quasi-identifying attribute must be specified."}'
 
 
 	# ----------------------------------------------------#
-	#    CREACIÓN DE JERARQUÍAS PARA CADA ATRIBUTO	
+	#    CREATION OF HIERARCHIES FOR EACH ATTRIBUTE	
 	# ----------------------------------------------------#
 	
 	# Se van a crear jerarquías para todos los atributos ya que se desconoce que 
 	# atributos tendrá el usuario de tipo quasiidentifying. Para ello, se 
 	# recorrerá la lista de atributos de dicho tipo y dependiendo de cual sea
 	# se creará la jerarquía de un tipo u otro.
+	
+	# Hierarchies will be created for all attributes because it is not known which 
+	# quasiidentifying attributes the user will have. To do this, we will go through 
+	# the list of quasiidentifying attributes and depending on which one it is we will 
+	# create the hierarchy
 	for i in quasiidentifying:
-		# --------------------- EDAD -------------------------#
+		# --------------------- AGE -------------------------#
 		if i == 'edad':
-			# Creación del tipo de jerarquia
+			# Creation of the hierarchy type
 			interval_based_edad = IntervalHierarchyBuilder()
-			# Insercción de intervalos
+			# Interval insertion
 			interval_based_edad.add_interval(0,5, "0-5")
 			interval_based_edad.add_interval(5,10, "5-10")
 			interval_based_edad.add_interval(10,15, "10-15")
@@ -144,33 +149,33 @@ def script(method, attributes):
 			interval_based_edad.add_interval(90,95, "90-95")
 			interval_based_edad.add_interval(95,100, "95-100")
 
-			# Inserción de nuevo nivel de intervalos
+			# Insertion of new interval level
 			interval_based_edad.level(0).add_group(2, "0-10").add_group(2, "10-20").add_group(2, "20-30").add_group(2, "30-40").add_group(2, "40-50").add_group(2, "50-60").add_group(2, "60-70").add_group(2, "70-80").add_group(2, "80-90").add_group(2, "90-100");
 	
-			# Inserción de nuevo nivel de intervalos
+			# Insertion of new interval level
 			interval_based_edad.level(1).add_group(2, "0-20").add_group(2, "20-40").add_group(2, "40-60").add_group(2, "60-80").add_group(2, "80-100");
 	
-			# Inserción de nuevo nivel de intervalos
+			# Insertion of new interval level
 			interval_based_edad.level(2).add_group(2, "0-40").add_group(2, "40-80").add_group(1, ">=80");
 	
-			# Inserción de nuevo nivel de intervalos
+			# Insertion of new interval level
 			interval_based_edad.level(3).add_group(2, "0-80").add_group(1, ">=80");
 	
-			# Inserción de nuevo nivel de intervalos
+			# Insertion of new interval level
 			interval_based_edad.level(4).add_group(1, "0-100");
 	
-			# Se aplica a los valores de la edad la jerarquia anteriormente creada
+			# The previously created hierarchy is applied to the age values.
 			edades = df["edad"].tolist()
 			interval_hierarchy_edad = arxaas.hierarchy(interval_based_edad, edades)
 			dataset.set_hierarchy("edad", interval_hierarchy_edad)
 			
 		elif i == 'sueldo':
-			# --------------------- SUELDO -------------------------#
+			# --------------------- SALARY -------------------------#
 			
-			# Creación del tipo de jerarquia
+			# Creation of the hierarchy type
 			interval_based_sueldo = IntervalHierarchyBuilder()
 			
-			# Insercción de intervalos
+			# Interval insertion
 			interval_based_sueldo.add_interval(0,5000, "0-5K")
 			interval_based_sueldo.add_interval(5000,10000, "[5K-10K)")
 			interval_based_sueldo.add_interval(10000,15000, "[10K-15K)")
@@ -192,51 +197,51 @@ def script(method, attributes):
 			interval_based_sueldo.add_interval(90000,95000, "[90K-95K)")
 			interval_based_sueldo.add_interval(95000,100000, "[95K-100K)")
 	
-			# Inserción de nuevo nivel de intervalos
+			# Insertion of new interval level
 			interval_based_sueldo.level(0).add_group(2, "[0-10K)").add_group(2, "[10K-20K)").add_group(2, "[20K-30K)").add_group(2, "[30K-40K)").add_group(2, "[40K-50K)").add_group(2, "[50K-60K)").add_group(2, "[60K-70K)").add_group(2, "[70K-80K)").add_group(2, "[80K-90K)").add_group(2, "[90K-100K)");
 		
-			# Inserción de nuevo nivel de intervalos
+			# Insertion of new interval level
 			interval_based_sueldo.level(1).add_group(2, "[0-20K)").add_group(2, "[20K-40K)").add_group(2, "[40K-60K)").add_group(2, "[60-80K)").add_group(2, "[80K-100K)");
 	
-			# Inserción de nuevo nivel de intervalos
+			# Insertion of new interval level
 			interval_based_sueldo.level(2).add_group(2, "[0-40K)").add_group(2, "[40K-80K)").add_group(1, ">=80K");
 	
-			# Inserción de nuevo nivel de intervalos
+			# Insertion of new interval level
 			interval_based_sueldo.level(3).add_group(2, "[0-80K)").add_group(1, ">=80K");
 		
-			# Se aplica a los valores de sueldo la jerarquia anteriormente creada
+			# The previously created hierarchy is applied to the salary values.
 			sueldos = df["sueldo"].tolist()
 			interval_hierarchy_sueldos = arxaas.hierarchy(interval_based_sueldo, sueldos)
 			dataset.set_hierarchy("sueldo", interval_hierarchy_sueldos)
 
 		elif i == 'lat':
-			# --------------------- LATITUD -------------------------#
+			# --------------------- LAT -------------------------#
 			
-			# Creación del tipo de jerarquia
+			# Creation of the hierarchy type
 			redaction_builder_lat = RedactionHierarchyBuilder()
 			
-			# Se aplica a los valores de latitud la jerarquia anteriormente creada
+			# The previously created hierarchy is applied to the latitude values.
 			lats = df["lat"].tolist()
 			redaction_hierarchy_lat = arxaas.hierarchy(redaction_builder_lat, lats) 
 			dataset.set_hierarchy("lat", redaction_hierarchy_lat)
 
 		elif i=='lon':
-			# --------------------- LONGITUD -------------------------#	
+			# --------------------- LONG -------------------------#	
 			
-			# Creación del tipo de jerarquia
+			# Creation of the hierarchy type
 			redaction_builder_lon = RedactionHierarchyBuilder()
 			
-			# Se aplica a los valores de longitud la jerarquia anteriormente creada
+			# The previously created hierarchy is applied to the longitude values.
 			longs = df["lon"].tolist()
 			redaction_hierarchy_lon = arxaas.hierarchy(redaction_builder_lon, longs) 
 			dataset.set_hierarchy("lon", redaction_hierarchy_lon)
 			
 		elif i=='temperatura':
-			# ------------------ TEMPERATURA -----------------------#	
-			# Creación del tipo de jerarquia
+			# ------------------ TEMPERATURE -----------------------#	
+			# Creation of the hierarchy type
 			interval_based_temperatura = IntervalHierarchyBuilder()
 			
-			# Insercción de intervalos
+			# Interval insertion
 			interval_based_temperatura.add_interval(0.0,5.0, "0-5 ºC")
 			interval_based_temperatura.add_interval(5.0,10.0, "5-10 ºC")
 			interval_based_temperatura.add_interval(10.0,15.0, "10-15 ºC")
@@ -248,27 +253,27 @@ def script(method, attributes):
 			interval_based_temperatura.add_interval(40.0,45.0, "40-45 ºC")
 			interval_based_temperatura.add_interval(45.0,50.0, "45-50 ºC")
 
-			# Inserción de nuevo nivel de intervalos
+			# Insertion of new interval level
 			interval_based_temperatura.level(0).add_group(2, "0-10 ºC").add_group(2, "10-20 ºC").add_group(2, "20-30 ºC").add_group(2, "30-40 ºC").add_group(2, "40-50 ºC");
 	
-			# Inserción de nuevo nivel de intervalos
+			# Insertion of new interval level
 			interval_based_temperatura.level(1).add_group(2, "0-20 ºC").add_group(2, "20-40 ºC").add_group(1, ">=40 ºC");
 	
-			# Inserción de nuevo nivel de intervalos
+			# Insertion of new interval level
 			interval_based_temperatura.level(2).add_group(2, "0-40 ºC").add_group(1, ">=40 ºC");
 	
-			# Se aplica a los valores de la edad la jerarquia anteriormente creada
+			# The previously created hierarchy is applied to the temperature values.
 			temperaturas = df["temperatura"].tolist()
 			interval_hierarchy_temperatura = arxaas.hierarchy(interval_based_temperatura, temperaturas)
 			dataset.set_hierarchy("temperatura", interval_hierarchy_temperatura)
 		
 		elif i=='pulso':
-			# --------------------- PULSO --------------------------#
+			# --------------------- PULSE --------------------------#
 			
-			# Creación del tipo de jerarquia
+			# Creation of the hierarchy type
 			interval_based_pulso = IntervalHierarchyBuilder()
 			
-			# Insercción de intervalos
+			# Interval insertion
 			interval_based_pulso.add_interval(0,5, "0-5 bpm")
 			interval_based_pulso.add_interval(5,10, "5-10 bpm")
 			interval_based_pulso.add_interval(10,15, "10-15 bpm")
@@ -291,19 +296,19 @@ def script(method, attributes):
 			interval_based_pulso.add_interval(95,100, "95-100 bpm")
 			interval_based_pulso.add_interval(100,250, ">= 100 bpm")
 
-			# Inserción de nuevo nivel de intervalos
+			# Insertion of new interval level
 			interval_based_pulso.level(0).add_group(2, "0-10 bpm").add_group(2, "10-20 bpm").add_group(2, "20-30 bpm").add_group(2, "30-40 bpm").add_group(2, "40-50 bpm").add_group(2, "50-60 bpm").add_group(2, "60-70 bpm").add_group(2, "70-80 bpm").add_group(2, "80-90 bpm").add_group(2, "90-100 bpm").add_group(1, ">=100 bpm");
 	
-			# Inserción de nuevo nivel de intervalos
+			# Insertion of new interval level
 			interval_based_pulso.level(1).add_group(2, "0-20 bpm").add_group(2, "20-40 bpm").add_group(2, "40-60 bpm").add_group(2, "60-80 bpm").add_group(2, "80-100 bpm").add_group(1, ">=100 bpm");
 	
-			# Inserción de nuevo nivel de intervalos
+			# Insertion of new interval level
 			interval_based_pulso.level(2).add_group(2, "0-40 bpm").add_group(2, "40-80 bpm").add_group(1, "80-100 bpm").add_group(1, ">=100 bpm");
 	
-			# Inserción de nuevo nivel de intervalos
+			# Insertion of new interval level
 			interval_based_pulso.level(3).add_group(2, "0-80 bpm").add_group(2, ">=80 bpm");
 	
-			# Se aplica a los valores de la edad la jerarquia anteriormente creada
+			# The previously created hierarchy is applied to the pulse values.
 			pulsos = df["pulso"].tolist()
 			interval_hierarchy_pulso = arxaas.hierarchy(interval_based_pulso, pulsos)
 			dataset.set_hierarchy("pulso", interval_hierarchy_pulso)
@@ -351,34 +356,34 @@ def script(method, attributes):
 		
 
 	# ----------------------------------------------------#
-	#    	ELECCIÓN DE MÉTODO DE PRIVATIZACIÓN		
+	#    	CHOICE OF PRIVATIZATION METHOD		
 	# ----------------------------------------------------#
 	
-	# Se debe comprobar que al usar KAnonimity no existan atributos sensibles
+	# When using KAnonimity, check that there are no sensitive attributes.
 	if method == "KAnonimity":
 		if flag_sensitive == True:
-			return '{ "Error":"No se ha podido privatizar los datos: El método KAnonimity no soporta atributos sensibles"}'
+			return '{ "Error":"It has not been possible to privatize the data: KAnonimity method does not support sensitive attributes."}'
 		else:
 			anon_result = arxaas.anonymize(dataset=dataset, privacy_models=[KAnonymity(attributes['level'])])	
 	
-	# Se debe comprobar que al usar LDiversity existan atributos sensibles
+	# Check for sensitive attributes when using LDiversity
 	elif method == "LDiversity":
 		if flag_sensitive == False:
-			return '{ "Error":"No se ha podido privatizar los datos: El método LDiversity necesita un atributo sensible"}'
+			return '{ "Error":"It has not been possible to privatize the data: LDiversity method needs a sensitive attribute."}'
 		else:
 			anon_result = arxaas.anonymize(dataset=dataset, privacy_models=[LDiversityDistinct(int(attributes['level']), attributes['sensitive'])])
 	
-	# Se debe comprobar que al usar TCloseness existan atributos sensibles
+	# When using TCloseness, it must be checked that there are sensitive attributes
 	elif method == "TCloseness":
 		if flag_sensitive == False:
-			return '{ "Error":"No se ha podido privatizar los datos: El método TCloseness necesita un atributo sensible"}'
+			return '{ "Error":"It has not been possible to privatize the data: TCloseness method needs a sensitive attribute."}'
 		else:
 			anon_result = arxaas.anonymize(dataset=dataset, privacy_models=[TClosenessEqualDistance(float(attributes['level']), attributes['sensitive'])])
 	
-	# Transformación del resultado de la privatización a Dataframe
+	# Transformation of the privatization result to Dataframe
 	df = anon_result.dataset.to_dataframe()
 
-	# Transformación del Dataframe a JSON
+	# Dataframe to JSON transformation
 	out = df.to_json(orient='index')
 	
 	return out
@@ -390,16 +395,16 @@ def script(method, attributes):
 class General(Resource):
 	def get(self):
 	
-		# Se obtiene el valor del método de privatización
+		# The value of the privatization method is obtained
 		method = request.args.get('method')
-		# Se obtienen los valores de los tipos de atributos
+		# The values of the attribute types are obtained
 		attributes = request.args.get('attributes[]')
 		
-		# Se comprueba si tanto "method" como "attributes[]" tienen valor
+		# Both "method" and "attributes[]" are checked to see if they have value
 		if not method:
-			return "No se ha especificado método de privatización"
+			return "Privatization method not specified"
 		elif not attributes:
-			return "No se han especificado el tipo de los atributos"
+			return "The type of the attributes have not been specified."
 		else:
 			jsonstring = script(method, attributes)
 			return json.loads(jsonstring)

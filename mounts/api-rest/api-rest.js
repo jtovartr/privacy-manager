@@ -1,24 +1,24 @@
-/* ===================================== Librerias ===================================== */
+/* ===================================== Libreries ===================================== */
 
 var https = require('https')
 var http = require('http')
 var fs = require('fs')
-var helmet = require('helmet') //Para HSTS, necesario anadir
+var helmet = require('helmet') //For HSTS, necessary to add
 var mysql = require('mysql')
 var jwt = require('jsonwebtoken')
 var express = require('express')
-var body_parser = require('body-parser') //necesario anadir
-const axios = require('axios') // probamos con axios para generar http
+var body_parser = require('body-parser') //necessary to add
+const axios = require('axios')
 
-/* ===================================== Configuramos Express ===================================== */
+/* ===================================== Express Configuration ===================================== */
 
 var app = express()
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 app.use(helmet())
-app.disable('etag') //Para desactivar los caches (evitando respuesta 304 Not Modified)
+app.disable('etag') //To disable caches (avoiding 304 Not Modified response)
 
-/* ===================================== Parametros SSL ===================================== */
+/* ===================================== SSL Parameters ===================================== */
 
 var options = { 
     key:     fs.readFileSync('ssl/hellfish.test.key'), 
@@ -27,7 +27,7 @@ var options = {
     dhparam: fs.readFileSync('ssl/dhparam.pem'), 
 }; 
 
-/* ================================= Parametros SSL para parte cliente ================================= */
+/* ================================= SSL Client Parameters ================================= */
 
 const agentSSL = new https.Agent({
 	key                 : fs.readFileSync('ssl/hellfish.test.key'),
@@ -37,7 +37,7 @@ const agentSSL = new https.Agent({
 	checkServerIdentity : () => undefined
 })
 
-/* ================== Conexion con la base de datos (hecha con "factory function" warper para usar await) ================== */
+/* ================== Database connection (made with "factory function" warper to use await) ================== */
 
 var con = mysql.createConnection({
 	//host     : '10.152.183.137',
@@ -47,7 +47,7 @@ var con = mysql.createConnection({
 	database : 'test'
 })
 
-/* ===================================== Direcciones de modulos ===================================== */
+/* ===================================== Module addresses ===================================== */
 // -- HTTPS --
 
 //var auth = 'https://10.152.183.201:8081';
@@ -56,16 +56,11 @@ var auth = 'https://auth.default.svc.cluster.local:8081'
 //var priv = 'http://10.152.183.202:8082';
 var priv = 'https://priv.default.svc.cluster.local:8082'
 
-//Para desarrollar desde local
-//var priv = 'https://192.168.0.193:8082'
-//Para desarrollar en trabajo
-//var priv = 'https://172.16.153.233:8082'
-
-/* ===================================== Creacion del servidor ===================================== */
-const puerto = 8080
-//app.listen(puerto, () => console.log('Servidor http escuchando en puerto ' + puerto));
-//https.createServer(options, app).listen(puerto, () => console.log('Servidor https escuchando en puerto ' + puerto))
-https.createServer(options, app).listen(puerto, () => console.log('Servidor https escuchando en puerto ' + puerto))
+/* ===================================== Server creation ===================================== */
+const port = 8080
+//app.listen(puerto, () => console.log('HTTP Server listening on port ' + port));
+//https.createServer(options, app).listen(puerto, () => console.log('HTTPS server listening on port ' + port))
+https.createServer(options, app).listen(port, () => console.log('HTTPS server listening on port ' + port))
 
 
 /* ===================================== GET ===================================== */
@@ -74,23 +69,23 @@ app.get('/', async function(req, res) {
 	console.log('req.query.token: ' + req.query.token)
 	console.log('req.query.stringQuery: ' + req.query.stringQuery)
 
-	//Comprobamos que se han introducido los datos necesarios
+	//We check that the required data have been entered
 	if (typeof req.query.token === 'undefined' || typeof req.query.stringQuery === 'undefined') {
-		res.send('No se ha introducido token o stringQuery')
+		res.send('No token or stringQuery entered')
 		return
 	}
 
-	//Obtenemos la clase del token que nos han enviado
-	var resultado = await comprobarToken(req.query.token)
+	//Obtain the type of token sent to us
+	var result = await checkToken(req.query.token)
 
-	console.log(JSON.stringify(resultado))
-	console.log('resultado.id: ' + resultado.id, ' resultado.clase: ' + resultado.clase)
+	console.log(JSON.stringify(result))
+	console.log('result.id: ' + result.id, ' result.type: ' + result.type)
 
-	//Enviamos el id de usuario, la clase y la solicitud a priv
-	var dato = await envioGETPriv(resultado.id, resultado.clase, req.query.stringQuery)
+	//We send the user id, the class and the query to priv
+	var data = await sendGETPriv(result.id, result.type, req.query.stringQuery)
 
 	//Cuando recibimos el dato deseado, lo mostramos por pantalla
-	res.send(dato)
+	res.send(data)
 	return
 })
 
@@ -100,28 +95,28 @@ app.post('/', function(req, res) {
 	console.log('req.body.token: ' + req.body.token)
 	console.log('req.body.datos: ' + req.body.datos)
 
-	//Comprobamos que se han introducido los datos necesarios
+	//We check that the required data have been entered
 	if (typeof req.body.token === 'undefined' || typeof req.body.datos === 'undefined') {
-		res.send('No se ha introducido token o datos')
+		res.send('No token or stringQuery entered')
 		return
 	}
 
-	//Comprobamos que la longitud de los datos es correcta
+	//Check that the length of the data is correct
 	if (req.body.datos.split(', ').length != 9) {
 		res.send('Longitud: ' + req.body.datos.split(', ').length + 'No se han introducido bien los datos')
 		return
 	}
 
-	//Obtenemos la clase del token que nos han enviado
-	comprobarToken(req.body.token)
-		.then((resultado) => {
-			console.log('resultado: ' + resultado)
-			//Enviamos la clase a priv junto con los datos
-			return envioPOSTPriv(resultado.clase, resultado.id, req.body.datos)
+	//Obtain the type of token sent to us
+	checkToken(req.body.token)
+		.then((result) => {
+			console.log('result: ' + result)
+			//send the token class to priv together with the data
+			return sendPOSTPriv(result.clase, result.id, req.body.datos)
 		})
-		.then((respuesta) => {
-			//Cuando recibimos la respuesta la enviamos
-			res.send(respuesta)
+		.then((response) => {
+			//When we receive the answer we send it
+			res.send(response)
 			return
 		})
 })
@@ -129,27 +124,27 @@ app.post('/', function(req, res) {
 /* ===================================== DELETE ===================================== */
 
 app.delete('/', function(req, res) {
-	//Borraremos los datos en base al id
+	//Delete the data based on the id
 
 	console.log('req.body.token: ' + req.body.token)
 	console.log('req.body.id: ' + req.body.id)
 
-	//Comprobamos que se han introducido los datos necesarios
+	//We check that the required data have been entered
 	if (typeof req.body.token === 'undefined' || typeof req.body.id === 'undefined') {
 		res.send('No se ha introducido token o id')
 		return
 	}
 
-	//Obtenemos la clase del token que nos han enviado
-	comprobarToken(req.body.token)
-		.then((resultado) => {
-			console.log('resultado: ' + resultado)
-			//Enviamos la clase a priv junto con los datos
-			return envioDELETEPriv(resultado.clase, resultado.id, req.body.id)
+	//Obtain the type of token sent to us
+	checkToken(req.body.token)
+		.then((result) => {
+			console.log('result: ' + result)
+			//send the token class to priv together with the data
+			return sendDELETEPriv(result.clase, result.id, req.body.id)
 		})
-		.then((respuesta) => {
-			//Cuando recibimos la respuesta la enviamos
-			res.send(respuesta)
+		.then((response) => {
+			//When we receive the answer we send it
+			res.send(response)
 			return
 		})
 })
@@ -157,15 +152,15 @@ app.delete('/', function(req, res) {
 
 /* ===================================== Funciones ===================================== */
 
-/**comprobarToken
- * Devuelve:
- * json {clase, id} si todo va bien
- * 1 si el token no es valido (hay que implementarlo en auth)
+/**checkToken
+ * Return:
+ * json {clase, id} if the token is valid
+ * 1 if the token is not valid
  */
-async function comprobarToken(token) {
-	//Hacemos una petición a auth, y le pasamos el mensaje.
+async function checkToken(token) {
+	//We make a request to auth, and pass the message to him.
 
-	var respuesta = ''
+	var response_checkToken = ''
 
 	await axios
 		.post(
@@ -179,24 +174,24 @@ async function comprobarToken(token) {
 		)
 		.then(function(response) {
 			console.log('response.data: \n' + JSON.stringify(response.data))
-			respuesta = response.data
+			response_checkToken = response.data
 		})
 		.catch(function(error) {
 			console.log(error)
 		})
-	return respuesta
+	return response_checkToken
 }
 
-async function envioGETPriv(id, clase, stringQuery) {
-	//Hay que implementar los distintos metodos segun la funcion que este usando.
-	//Por ahora implementamos el GET
+async function sendGETPriv(id, type, stringQuery) {
+	//The different methods are implemented according to the function to be used.
+	//For now we implement the GET
 
-	var respuesta = ''
+	var response_sendGETPriv = ''
 	//var priv = 'http://10.152.183.202:8082';
 	//var priv = 'http://priv.default.svc.cluster.local:8082';
 	var params = {
 		id          : id,
-		clase       : clase,
+		type        : type,
 		stringQuery : stringQuery
 	}
 
@@ -209,23 +204,23 @@ async function envioGETPriv(id, clase, stringQuery) {
 		})
 		.then(function(response) {
 			console.log(response.data)
-			respuesta = response.data
+			response_sendGETPriv = response.data
 		})
 		.catch(function(error) {
 			console.log(error)
 		})
 
-	return respuesta
+	return response_sendGETPriv
 }
 
-async function envioPOSTPriv(clase, id, datos) {
+async function sendPOSTPriv(type, id, data) {
 	//Por ahora implementamos el POST
 
-	var respuesta = ''
+	var response_sendPOSTPriv = ''
 	//var priv = 'https://10.152.183.202:8082';
 	//var priv = 'https://priv.default.svc.cluster.local:8082';
 	var params = {
-		clase : clase,
+		type  : type,
 		id    : id,
 		datos : datos
 	}
@@ -238,23 +233,22 @@ async function envioPOSTPriv(clase, id, datos) {
 		})
 		.then(function(response) {
 			console.log(response.data)
-			respuesta = response.data
+			response_sendPOSTPriv = response.data
 		})
 		.catch(function(error) {
 			console.log(error)
 		})
 
-	return respuesta
+	return response_sendPOSTPriv
 }
 
-async function envioDELETEPriv(clase, idUser, idToDelete) {
-	//Por ahora implementamos el DELETE
+async function sendDELETEPriv(type, idUser, idToDelete) {
 
-	var respuesta = ''
+	var response_sendDELETEPriv = ''
 	//var priv = 'https://10.152.183.202:8082';
 	//var priv = 'https://priv.default.svc.cluster.local:8082';
 	var data = {
-		clase      : clase,
+		type       : type,
 		idUser     : idUser,
 		idToDelete : idToDelete
 	}
@@ -268,11 +262,11 @@ async function envioDELETEPriv(clase, idUser, idToDelete) {
 		})
 		.then(function(response) {
 			console.log(response.data)
-			respuesta = response.data
+			response_sendDELETEPriv = response.data
 		})
 		.catch(function(error) {
 			console.log(error)
 		})
 
-	return respuesta
+	return response_sendDELETEPriv
 }

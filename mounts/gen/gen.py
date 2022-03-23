@@ -193,7 +193,7 @@ def is_t_close(df, partition, sensitive_column, global_freqs, p=0.2):
 
 def script():
 
-    #Nos conectamos a la base de datos
+    #connection to the database
     #Este no tendría por que conectarse al master porque solo lee datos
     mydb = mysql.connector.connect(
     #host="10.152.183.232", #mysql read
@@ -204,7 +204,7 @@ def script():
     database="test"
     )
 
-    #Intentamos recoger los datos de mysql en vez del csv
+    #We tried to collect the data from mysql instead of csv
     #df = pd.read_csv("./data/k-anonymity/my-adult.all.txt", sep=", ", header=None, names=names, index_col=False, engine='python');
     df = pd.read_sql("select * from personas", mydb)
     print('----------------TABLA-------------------')
@@ -227,8 +227,6 @@ def script():
     print('----------------RECTS-------------------')
     print(rects[:10])
 
-    # Para que no muestre graficas
-
     # pl.figure(figsize=(20,20))
     # ax = pl.subplot(111)
     # plot_rects(df, ax, rects, column_x, column_y, facecolor='r')
@@ -246,8 +244,6 @@ def script():
 
     column_x, column_y = feature_columns[:2]
     l_diverse_rects = get_partition_rects(df, finished_l_diverse_partitions, column_x, column_y, indexes, offsets=[0.0, 0.0])
-
-    # Para que no muestre graficas
 
     # pl.figure(figsize=(20,20))
     # ax = pl.subplot(111)
@@ -278,7 +274,7 @@ def script():
 
     dft = build_anonymized_dataset(df, finished_t_close_partitions, feature_columns, sensitive_column)
 
-    # out es el string json
+    # out is the string json
     out = dft.to_json(orient='index')
     
     print('----------------DFT-------------------')
@@ -289,8 +285,6 @@ def script():
 
     print('----------------OUT-------------------')
     print(out)
-    
-    # Para que no muestre graficas
 
     # pl.figure(figsize=(20,20))
     # ax = pl.subplot(111)

@@ -1,23 +1,23 @@
-/* ===================================== Librerias ===================================== */
+/* ===================================== Libraries ===================================== */
 
 var https = require('https')
 var http = require('http')
 var fs = require('fs')
-var helmet = require('helmet') //Para HSTS, necesario anadir
+var helmet = require('helmet') //Para HSTS, necessary to add
 var mysql = require('mysql')
 var jwt = require('jsonwebtoken')
 var express = require('express')
-var body_parser = require('body-parser') //necesario anadir
-const util = require('util') // Para "promisify" las querys
+var body_parser = require('body-parser') //necessary to add
+const util = require('util') // To "promisify" the queries
 
-/* ===================================== Configuramos Express ===================================== */
+/* ===================================== Express Configuration ===================================== */
 var app = express()
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 app.use(helmet())
-app.disable('etag') //Para desactivar los caches (evitando respuesta 304 Not Modified)
+app.disable('etag') //To disable caches (avoiding 304 Not Modified response)
 
-/* ===================================== Parametros SSL ===================================== */
+/* ===================================== SSL Parameters ===================================== */
 var options = { 
     key:     fs.readFileSync('ssl/hellfish.test.key'), 
     cert:    fs.readFileSync('ssl/hellfish.test.crt'), 
@@ -25,7 +25,7 @@ var options = {
     dhparam: fs.readFileSync('ssl/dhparam.pem'), 
 }; 
 
-/* ================== Conexion con la base de datos (hecha con "factory function" warper para usar await) ================== */
+/* ================== Database connection (made with "factory function" warper to use await) ================== */
 var dbConfig = {
 	//host     : '10.152.183.232', //mysql read
 	host     : 'mysql-master.default.svc.cluster.local',
@@ -48,97 +48,95 @@ function makeDb(config) {
 
 var con = makeDb(dbConfig)
 
-/* ===================================== Creacion del servidor ===================================== */
+/* ===================================== Server Creation ===================================== */
 
-const puerto = 8081
-//app.listen(puerto, () => console.log('Servidor http escuchando en puerto ' + puerto));
-https.createServer(options, app).listen(puerto, () => console.log('Servidor https escuchando en puerto ' + puerto))
+const port = 8081
+//app.listen(port, () => console.log('HTTP server listening on port ' + port));
+https.createServer(options, app).listen(port, () => console.log('HTTPS server listening on port ' + port))
 
 /* ===================================== GET ===================================== */
 
 app.get('/', function(req, res) {
-	res.send('Para autenticarte, debes mandar tu "email" y tu "contrasena" mediante POST')
+	res.send('To authenticate, you must send your "email" and your "password" via POST')
 })
 
 /* ===================================== POST ===================================== */
 
-/**Yo recibo un post con un usuario y contrasena
- * y le devuelvo un token */
+/**I receive a post with a username and password and return a token.*/
 
 app.post('/', async function(req, res) {
-	//Habria que almacenar un hash en vez de la contraseña
+	//A hash should be stored instead of the password.
 
-	//Comprobamos si me mandan email o usuario, token o nada
+	//We check if they send me email or user, token or nothing.
 	if (typeof req.body.token !== 'undefined') {
-		//se ha enviado token
-		//respondo con la traduccion del token
+		//token has been sent
+		//I answer with the translation of the token
 		var payload = jwt.verify(req.body.token, 'shhhhh')
-		console.log('Me han enviado un token')
+		console.log('A token has been sent to me')
 		console.log('Payload: ' + JSON.stringify(payload))
-		res.status(200).send({ id: payload.id, clase: payload.clase })
+		res.status(200).send({ id: payload.id, type: payload.type })
 		return
 	}
-	else if (typeof req.body.email !== 'undefined' || typeof req.body.contrasena !== 'undefined') {
-		//se ha enviado correo y contraseña
-		//Comprobamos si la contrasena es correcta
-		var resultado = await comprobarContrasena(req.body.email, req.body.contrasena)
-		if (resultado == 2) {
-			//Contraseña incorrecta
-			res.status(401).send('Contraseña incorrecta')
+	else if (typeof req.body.email !== 'undefined' || typeof req.body.password !== 'undefined') {
+		//email and password have been sent
+		//We check if the password is correct
+		var result = await checkPassword(req.body.email, req.body.password)
+		if (result == 2) {
+			//Incorrect password
+			res.status(401).send('Incorrect password')
 		}
-		else if (resultado == 1) {
-			//Usuario no existe
-			res.status(401).send('El usuario no existe')
+		else if (result == 1) {
+			//User does not exist
+			res.status(401).send('User does not exist')
 		}
 		else {
-			//Correcta, le hago el token (id, clase) y lo devuelvo
-			//console.log({ id: resultado.id, clase: resultado.clase })
-			var token = jwt.sign({ id: resultado.id, clase: resultado.clase }, 'shhhhh')
+			//Correct, I make the token (id, class) and return it 
+			//console.log({ id: result.id, clase: result.type })
+			var token = jwt.sign({ id: result.id, type: result.clase }, 'shhhhh')
 			var object = new Object()
 			object.token = token
 			res.send(object)
 		}
 	}
 	else {
-		console.log('No se ha introducido email o contrasena')
+		console.log('No email or password entered')
 		console.log('req.body: ' + JSON.stringify(req.body))
-		res.status(400).send('No se ha introducido email o contrasena')
+		res.status(400).send('No email or password entered')
 		return
 	}
 })
 
-/* ===================================== Funciones ===================================== */
+/* ===================================== Functions ===================================== */
 
-/**comprobarContrasena
- * Devuelve:
- * objeto con id y clase si la contraseña es correcta
- * 1 si no se encuentra el usuario
- * 2 si la contrasena no es correcta
+/**checkPassword
+ * Return:
+ * object with id and type if the password is correct
+ * 1 if the user is not found
+ * 2 if the password is not correct
  */
-async function comprobarContrasena(email, contrasena) {
-	//Hay que ver si tiene autorizacion:
+async function checkPassword(email, password) {
+	// We have to see if the authorization.
 	var result = await con.query('SELECT contrasena, clase, id FROM usuarios WHERE email=?', email)
 
-	//Vemos si existe el usuario:
-	console.log('result[0] ' + result[0]) //devuelve un array con un json dentro
+	//We see if the user exists
+	console.log('result[0] ' + result[0]) //returns an array with a json inside
 
 	if (typeof result[0] === 'undefined') {
-		//no se han devuelto datos desde la bbdd
-		console.log('El usuario no existe')
+		//no data returned from the database
+		console.log('The user does not exist')
 		return 1
 	}
 
-	console.log('contrasenaQuery: : ' + result[0].contrasena + '.')
-	console.log('contrasena proporcionada: ' + contrasena + '.')
+	console.log('passwordQuery: : ' + result[0].contrasena + '.')
+	console.log('password provided: ' + password + '.')
 
-	//Vemos si la contrasena es correcta
-	if (result[0].contrasena != contrasena) {
-		//Si no tengo acceso, no borro el mensaje
-		console.log('La contraseña es incorrecta')
+	//We check if the password is correct
+	if (result[0].contrasena != password) {
+		console.log('The password is incorrect')
 		return 2
 	}
 
-	//Si llego hasta aqui, todo correcto. Devuelvo el resultado de la query
-	console.log('clase: ' + result[0].clase)
-	return result[0] //El objeto json de la query que hay dentro del array.
+	//If I get this far, everything is OK. I return the result of the query
+	console.log('type: ' + result[0].clase)
+	return result[0] //The json object of the query inside the array.
 }
