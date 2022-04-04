@@ -240,7 +240,7 @@ async function typeAccessAction(type, action) {
 	//We check if we have permission to PUSH or DELETE
 
 	for (var i = 0; i < politics[type].rules.length; i++) {
-		if (politics[type].rules[i].action_type == accion) {
+		if (politics[type].rules[i].action_type == action) {
 			//If we have permission, we return 0
 			return 0
 		}
@@ -259,7 +259,7 @@ async function typeAccessAction(type, action) {
  * Returns: The response from the database.
  */
 async function enterData(data) {
-	var data_split = datos.split(', ')
+	var data_split = data.split(', ')
 
 	try {
 		var result = await con.query(
@@ -597,10 +597,10 @@ async function obtainViewColumns(queryString) {
 
 /**
  * 
- * @param {Array} datos 
+ * @param {Array} data 
  * La estructura de datos es: [{privacy_method:________, datosSQL:_________}{}...]
  * 
- * Devuelve: los datos procesados
+ * Devuelve: los data procesados
  */
 async function processData(data) {
 	var processed_data = []

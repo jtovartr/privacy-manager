@@ -71,10 +71,19 @@ app.post('/', async function(req, res) {
 	if (typeof req.body.token !== 'undefined') {
 		//token has been sent
 		//I answer with the translation of the token
-		var payload = jwt.verify(req.body.token, 'shhhhh')
-		console.log('A token has been sent to me')
-		console.log('Payload: ' + JSON.stringify(payload))
-		res.status(200).send({ id: payload.id, type: payload.type })
+		//var payload = jwt.verify(req.body.token, 'shhhhh')
+		jwt.verify(req.body.token, 'shhhhh', (err, decoded) => {
+			payload = decoded
+    			if(err) {
+    				console.log("Session expired")
+         			res.status(401).send('Session expired')
+    			}
+    			else {
+    				console.log('A token has been sent to me')
+				console.log('Payload: ' + JSON.stringify(payload))
+				res.status(200).send({ id: payload.id, type: payload.type })
+    			}
+    		}) 
 		return
 	}
 	else if (typeof req.body.email !== 'undefined' || typeof req.body.password !== 'undefined') {
@@ -92,7 +101,9 @@ app.post('/', async function(req, res) {
 		else {
 			//Correct, I make the token (id, class) and return it 
 			//console.log({ id: result.id, clase: result.type })
-			var token = jwt.sign({ id: result.id, type: result.clase }, 'shhhhh')
+			var token = jwt.sign({ id: result.id, type: result.clase }, 'shhhhh', {
+				expiresIn: "1h"
+			})
 			var object = new Object()
 			object.token = token
 			res.send(object)

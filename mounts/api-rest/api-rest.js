@@ -77,14 +77,17 @@ app.get('/', async function(req, res) {
 
 	//Obtain the type of token sent to us
 	var result = await checkToken(req.query.token)
-
 	console.log(JSON.stringify(result))
 	console.log('result.id: ' + result.id, ' result.type: ' + result.type)
-
+	
+	if(result.id === undefined) {
+		res.send('Token expired')
+		return
+	}
 	//We send the user id, the class and the query to priv
 	var data = await sendGETPriv(result.id, result.type, req.query.stringQuery)
 
-	//Cuando recibimos el dato deseado, lo mostramos por pantalla
+	//When we receive the desired data, we display it on the screen.
 	res.send(data)
 	return
 })
@@ -93,26 +96,32 @@ app.get('/', async function(req, res) {
 
 app.post('/', function(req, res) {
 	console.log('req.body.token: ' + req.body.token)
-	console.log('req.body.datos: ' + req.body.datos)
+	console.log('req.body.data: ' + req.body.data)
 
 	//We check that the required data have been entered
-	if (typeof req.body.token === 'undefined' || typeof req.body.datos === 'undefined') {
+	if (typeof req.body.token === 'undefined' || typeof req.body.data === 'undefined') {
 		res.send('No token or stringQuery entered')
 		return
 	}
 
 	//Check that the length of the data is correct
-	if (req.body.datos.split(', ').length != 9) {
-		res.send('Longitud: ' + req.body.datos.split(', ').length + 'No se han introducido bien los datos')
+	if (req.body.data.split(', ').length != 9) {
+		res.send('Longitud: ' + req.body.data.split(', ').length + 'Data entered incorrectly')
 		return
 	}
 
 	//Obtain the type of token sent to us
 	checkToken(req.body.token)
 		.then((result) => {
-			console.log('result: ' + result)
-			//send the token class to priv together with the data
-			return sendPOSTPriv(result.clase, result.id, req.body.datos)
+			if(result.id === undefined) {
+				res.send('Token expired')
+				return
+			}
+			else {
+				console.log('result: ' + result)
+				//send the token class to priv together with the data
+				return sendPOSTPriv(result.type, result.id, req.body.data)
+			}
 		})
 		.then((response) => {
 			//When we receive the answer we send it
@@ -131,16 +140,22 @@ app.delete('/', function(req, res) {
 
 	//We check that the required data have been entered
 	if (typeof req.body.token === 'undefined' || typeof req.body.id === 'undefined') {
-		res.send('No se ha introducido token o id')
+		res.send('No token or id entered')
 		return
 	}
 
 	//Obtain the type of token sent to us
 	checkToken(req.body.token)
 		.then((result) => {
-			console.log('result: ' + result)
-			//send the token class to priv together with the data
-			return sendDELETEPriv(result.clase, result.id, req.body.id)
+			if(result.id === undefined) {
+				res.send('Token expired')
+				return
+			}
+			else {
+				console.log('result: ' + result)
+				//send the token class to priv together with the data
+				return sendDELETEPriv(result.type, result.id, req.body.id)
+			}
 		})
 		.then((response) => {
 			//When we receive the answer we send it
@@ -154,7 +169,7 @@ app.delete('/', function(req, res) {
 
 /**checkToken
  * Return:
- * json {clase, id} if the token is valid
+ * json {type, id} if the token is valid
  * 1 if the token is not valid
  */
 async function checkToken(token) {
@@ -222,7 +237,7 @@ async function sendPOSTPriv(type, id, data) {
 	var params = {
 		type  : type,
 		id    : id,
-		datos : datos
+		data : data
 	}
 
 	console.log('Params: ' + JSON.stringify(params))
