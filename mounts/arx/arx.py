@@ -18,7 +18,7 @@ import json
 app = Flask(__name__)
 api = Api(app)
 
-def script(method, attributes):
+def script(method, attributes, sql_query):
 	
 	flag_identifying = False #To find out if there is an identifying attribute
 	flag_quasiidentifying = False #To find out if there is an quasiidentifying attribute
@@ -41,7 +41,7 @@ def script(method, attributes):
 	)
 
 	# Database query
-	df = pd.read_sql("select * from personas", mydb)
+	df = pd.read_sql(sql_query, mydb)
 
 	# Transformation of the obtained data into Dataset
 	dataset = Dataset.from_pandas(df)
@@ -399,14 +399,17 @@ class General(Resource):
 		method = request.args.get('method')
 		# The values of the attribute types are obtained
 		attributes = request.args.get('attributes[]')
+		sql_query = request.args.get('sql')
 		
 		# Both "method" and "attributes[]" are checked to see if they have value
 		if not method:
 			return "Privatization method not specified"
 		elif not attributes:
 			return "The type of the attributes have not been specified."
+		elif not sql_query:
+			return "The query to be performed has not been specified"
 		else:
-			jsonstring = script(method, attributes)
+			jsonstring = script(method, attributes, sql_query)
 			return json.loads(jsonstring)
 
 

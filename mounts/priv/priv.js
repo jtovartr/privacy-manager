@@ -146,6 +146,7 @@ app.get('/', async function(req, res) {
 		var processed_data = await processData(data)
 
 		res.send(processed_data)
+		//res.send(data)
 	} catch (error) {
 		console.log(error)
 	}
@@ -449,114 +450,70 @@ async function querysAVistas(typeUser, queryUser) {
 	 */
 
 	var finalResult = []
+	var query_select = []
 	var queryUserArray = queryUser.split(' ')
+	
+	if(queryUser.includes('WHERE')) {
+		var where =  queryUser.substr(queryUser.indexOf('WHERE')+6)
+	}
 
 	//For each rule with GET
 	for (var i = 0; i < politics[typeUser].rules.length; i++) {
 		if (politics[typeUser].rules[i].action_type == 'GET') {
-			//query
-
-			var indexFrom = queryUserArray.indexOf('FROM')
-			var columnsArray = []
-			var nameTableString = ''
-
-			//We do different things depending on where we are in the query.
-			//Some parts of the string are stored in separate strings in order to avoid SQL injection.
-			var j = 0
-
-			// ----- SELECT ------
-			//queryString = queryString + queryUserArray[0] + ' '
-
-			// ----- COLUMNAS -----
-			//We have to format the columns coming from the user
-			if (politics[typeUser].rules[i].viewColumns[0] == '*') {
-				//If there is a * in the rules, we leave the user query
-
-				//First we remove the "," that may remain in the user's query
-				queryUserArray[j] = queryUserArray[j].replace(',', '')
-
-				//If there is a '*' in the rules, we can leave the user query as it is but add the id column to it.
-				for (j = 1; j < indexFrom; j++) {
-					columnsArray.push(queryUserArray[j])
-				}
-				columnsArray.push('id')
+			var indexFrom_queryUser = queryUserArray.indexOf('FROM') // Position of from
+			var indexWhere_queryUser = queryUserArray.indexOf('WHERE')
+			var select_variables = [] //Query user
+			var where_filter = [] // Query filter
+			
+			var select_resource_aux = politics[typeUser].rules[i].resource.split(' ') // resources the user can access
+			var select_resource = [] // user resource attributes
+			var indexFrom_queryPolitics = select_resource_aux.indexOf('FROM') // Position of from
+			
+			// We keep the attributes of the query
+			for (var j = 0; j < indexFrom_queryUser; j++) {
+   				select_variables[j] = queryUserArray[j]
+   				select_variables[j] = select_variables[j].replace(',', '')
 			}
-			else if (queryUserArray[1] == '*') {
-				////If there is a '*' in the user, we can perform this query because the view is already filtered.
-				columnsArray.push(queryUserArray[1])
+			// the first element is deleted: SELECT
+			select_variables.shift()
+			
+			// Nos quedamos con los atributos de la politica
+			for (var j = 0; j < indexFrom_queryPolitics; j++) {
+   				select_resource[j] = select_resource_aux[j]
+   				select_resource[j] = select_resource[j].replace(',', '')
+			}
+			// the first element is deleted: SELECT
+			select_resource.shift()
+
+			var query_select_aux = []
+			// Both lists are compared to obtain the minimum common multiples of attributes.
+			if (select_variables[0] == '*') {
+				query_select_aux = select_resource
+			}
+			else if (select_resource[0] == '*') {
+				query_select_aux = select_variables
 			}
 			else {
-				//If there are columns in the user and in the rules, we have to compare
-				for (j = 1; j < indexFrom; j++) {
-					//First we remove the ',' that may remain in the user's query
-					queryUserArray[j] = queryUserArray[j].replace(',', '')
-					//We then compare
-					politics[typeUser].rules[i].viewColumns.forEach((element) => {
-						if (element == queryUserArray[j]) {
+				for (j = 0; j < select_variables.length; j++) {
+					select_resource.forEach((element) => {
+						if (element == select_variables[j]) {
 							//If any column matches, we put it inside the query
-							columnsArray.push(queryUserArray[j])
+							query_select_aux.push(select_variables[j])
 						}
 					})
 				}
-				//We add the id
-				columnsArray.push('id')
-			}
-
-			// ----- FROM -----
-			//queryString = queryString + queryUserArray[indexFrom] + ' '
-
-			// ----- TABLE NAME -----
-			nameTableString = nameTableString + politics[typeUser].rules[i].viewName
-
-			// ----- WHERE Y CONDITIONS -----
-			//Vamos a quitar el where porque es copmlicado escaparlo
-			//Lo dejamos igual
-			// for (j = indexFrom + 3; j < queryUserArray.length; j++) {
-			// 	whereString = whereString + queryUserArray[j] + ' '
-			// }
-
-			
-			var allow = true
-
-			//If only the id is in the array columns, we do not send the query.
-			if (columnsArray[0] == 'id') {
-				allow = false
-			}
-
-			//If it is generalization and it is not '*', we do not send the query
-			if (politics[typeUser].rules[i].privacy_method == 'Generalization' && columnsArray[0] != '*') {
-				allow = false
-			}
-			//If it is KAnonimity and it is not '*', we don't send the query
-			if (politics[typeUser].rules[i].privacy_method == 'KAnonimity' && columnsArray[0] != '*') {
-				allow = false
-			}
-			if (allow) {
-				console.log('queries that are sent: ' + 'SELECT ' + columnsArray + ' FROM `' + nameTableString + '`')
-
-				try {
-					if (columnsArray[0] == '*') {
-						var result = await con.query('SELECT * FROM ??', nameTableString)
-						console.log(result)
-					}
-					else {
-						var result = await con.query('SELECT ?? FROM ??', [ columnsArray, nameTableString ])
-						console.log(result)
-					}
-				} catch (err) {
-					console.log(err)
-				}
-
-				finalResult.push({
+			}			
+			if (query_select_aux.length > 0) {
+				query_select.push({
 					privacy_method : politics[typeUser].rules[i].privacy_method,
 					attributes     : politics[typeUser].rules[i].attributes,
-					dataSQL       : result
+					dataSQL        : query_select_aux,
+					where		: where
 				})
 			}
 		}
 	}
-
-	return finalResult
+	return query_select
 }
 
 /**
@@ -608,31 +565,48 @@ async function processData(data) {
 	var result = []
 
 	for (var i = 0; i < data.length; i++) {
+		console.log(data[i])
+		query = 'SELECT '
+		for (var j=0; j<data[i].dataSQL.length; j++) {
+			query += data[i].dataSQL[j] + ','
+		}
+		query = query.slice(0, -1)
+		query += ' FROM personas'
+		if(data[i].where !== undefined) {
+			query += ' WHERE '
+			query += data[i].where
+		}
 		if (data[i].privacy_method == 'Exact') {
-			////We do nothing, we return them as they are.
+			//We do nothing, we return them as they are.
+			var result = await con.query(query)
 			processed_data.push({
 				privacy_method  : data[i].privacy_method,
-				processed_data : data[i].dataSQL
+				processed_data : result
 			})
 		}
+		
 		else if (data[i].privacy_method == 'MinNoise') {
+			var result = await con.query(query)
 			processed_data.push({
 				privacy_method  : data[i].privacy_method,
-				processed_data : await noise(data[i].dataSQL, 'personas', 0.1)
+				processed_data : await noise(result, 'personas', 0.1)
 			})
 		}
 		else if (data[i].privacy_method == 'MedNoise') {
+			var result = await con.query(query)
 			processed_data.push({
 				privacy_method  : data[i].privacy_method,
-				processed_data : await noise(data[i].dataSQL, 'personas', 0.5)
+				processed_data : await noise(result, 'personas', 0.5)
 			})
 		}
 		else if (data[i].privacy_method == 'MaxNoise') {
+			var result = await con.query(query)
 			processed_data.push({
 				privacy_method  : data[i].privacy_method,
-				processed_data : await noise(data[i].dataSQL, 'personas', 1)
+				processed_data : await noise(result, 'personas', 1)
 			})
 		}
+		/*
 		else if (data[i].privacy_method == 'Generalization') {
 			//We call the generalize module
 			try {
@@ -648,6 +622,7 @@ async function processData(data) {
 				console.log(error)
 			}
 		}
+		*/
 		else if (data[i].privacy_method == 'KAnonimity') {
 			//We call the KAnonimity module
 			try {	
@@ -658,7 +633,8 @@ async function processData(data) {
 				var response = await axios.get(arx, {
 					params: {
 						method: 'KAnonimity',
-						attributes: data[i].attributes
+						attributes: data[i].attributes,
+						sql: query
 					}
 				})
 				processed_data.push({
@@ -679,7 +655,8 @@ async function processData(data) {
 				var response = await axios.get(arx, {
 					params: {
 						method: 'LDiversity',
-						attributes: data[i].attributes
+						attributes: data[i].attributes,
+						sql: query
 					}
 				})
 				processed_data.push({
@@ -701,7 +678,8 @@ async function processData(data) {
 				var response = await axios.get(arx, {
 					params: {
 						method: 'TCloseness',
-						attributes: data[i].attributes
+						attributes: data[i].attributes,
+						sql: query
 					}
 				})
 				processed_data.push({
@@ -712,6 +690,8 @@ async function processData(data) {
 				console.log(error)
 			}
 		}
+	console.log(query)
+	console.log('________________________________')
 	}
 
 	return processed_data

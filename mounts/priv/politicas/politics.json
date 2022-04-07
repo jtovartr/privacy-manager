@@ -61,7 +61,7 @@
 		{
 			"action_type": "GET",
 			"privacy_method": "KAnonimity",
-			"resource": "SELECT enfermedad, temperatura, pulso FROM personas",
+			"resource": "SELECT * FROM personas",
 			"attributes": [
 				{
 					"identifying": "nombre",
