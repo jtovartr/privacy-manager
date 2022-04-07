@@ -359,76 +359,7 @@ async function noise(queryJson, table, factor) {
 	return queryJson
 }
 
-/**
- * 
- * @param {*} rule 
- * @param {String} fileName 
- * @param {int} iteration 
- * 
- * Creates a view in the database with the rule passed as a parameter.
- *  
- * Returns: the name of the created view
- */
-async function createViewFromRule(rule, fileName, iteration) {
-	var stringQuery = 'CREATE OR REPLACE VIEW personas_' + fileName + '_' + iteration + ' AS ' + rule.resource
 
-	if (!(rule.filter === undefined)) {
-		stringQuery = stringQuery + ' ' + rule.filter
-	}
-
-	//querys
-	try {
-		var result = await con.query(stringQuery)
-	} catch (err) {
-		console.log(err)
-	}
-
-	return 'personas_' + fileName + '_' + iteration
-}
-
-/**
- * 
- * @param {*} rule 
- * @param {String} type 
- * @param {int} iteration 
- * 
- * Create a view in the database with the rule passed as a parameter.
- * Use the "viewColumns" field when creating views.
- *  
- * Returns: the name of the created view
- */
-async function createViewFromViewColumns(rule, type, iteration) {
-	var stringQuery = 'CREATE OR REPLACE VIEW personas_' + type + '_' + iteration + ' AS '
-
-	//We create the SELECT part
-	var stringSelect = 'SELECT '
-
-	//We add the columns
-	for (var i = 0; i < rule.viewColumns.length; i++) {
-		stringSelect = stringSelect + rule.viewColumns[i] + ', '
-	}
-
-	//We remove the last comma and space, and fill in
-	stringSelect = stringSelect.slice(0, -2)
-	stringSelect = stringSelect + ' FROM personas'
-
-	stringQuery = stringQuery + stringSelect
-
-	//If it has a filter, we add it
-	if (!(rule.filter === undefined)) {
-		stringQuery = stringQuery + ' ' + rule.filter
-	}
-
-	//querys
-	try {
-		var resultado = await con.query(stringQuery)
-	} catch (err) {
-		console.log(err)
-	}
-
-	//And we return the name of the view
-	return 'personas_' + type + '_' + iteration
-}
 
 /**
  * 
@@ -516,41 +447,7 @@ async function querysAVistas(typeUser, queryUser) {
 	return query_select
 }
 
-/**
- * 
- * @param {String} queryString //query stored in the rules
- * 
- * Returns: an array with the columns after SELECT
- */
-async function obtainViewColumns(queryString) {
-	var queryStringArray = queryString.split(' ')
-	var result = []
 
-	//If the second word is an '*', we save it and return it directly
-	if (queryStringArray[1] == '*') {
-		result.push('*')
-	}
-	else {
-		//If it is not an '*', we have to keep the positions from 1 to FROM
-
-		var exit = 0
-		var i = 1
-		while (i < queryStringArray.length && exit == 0) {
-			if (queryStringArray[i] == 'FROM') {
-				exit = 1
-			}
-			else {
-				result.push(queryStringArray[i].replace(',', ''))
-				i++
-			}
-		}
-	}
-
-	//We add the ID column to be able to join later the data of people from different methods.
-	result.push('id')
-
-	return result
-}
 
 /**
  * 
@@ -731,52 +628,6 @@ async function updateRules() {
 	 * The politics*.json files will be read.
 	 */
 
-	// //passsing directoryPath and callback function
-	// fs.readdir(privacyRulesPath, async function(err, files) {
-	// 	//handling error
-	// 	if (err) {
-	// 		return console.log('Unable to scan directory: ' + err)
-	// 	}
-	// 	//listing all files using forEach
-	// 	files.forEach(async function(file) {
-	// 		// File es el nombre del archivo. leemos todos los "*.json"
-
-	// 		if (/\.json$/.test(file)) {
-	// 			var fileNoExtension = file.slice(0, file.length - 5)
-
-	// 			//Leemos el archivo
-	// 			var auxPol = fs.readFileSync(path.join(privacyRulesPath, file))
-
-	// 			//Y comparamos con lo que ya hay guardado
-
-	// 			if (JSON.stringify(politicsAsRead[fileNoExtension]) == JSON.stringify(JSON.parse(auxPol))) {
-	// 				//Si es igual, no tenemos que crear views
-	// 			}
-	// 			else {
-	// 				//Si es distinto, actualizamos el objeto
-	// 				politicsAsRead[fileNoExtension] = JSON.parse(auxPol)
-	// 				politics[fileNoExtension] = JSON.parse(auxPol)
-
-	// 				// y creamos las nuevas views (modificamos politics)
-
-	// 				for (var i = 0; i < politics[fileNoExtension].rules.length; i++) {
-	// 					if (politics[fileNoExtension].rules[i].action_type == 'GET') {
-	// 						//En rule.viewName almacenamos el nombre de la vista, y en rule.columns las columnas que contiene la vista
-	// 						//Si en las reglas hay un *, no tenemos que crear una view, puede acceder a toda la tabla
-	// 						politics[fileNoExtension].rules[i].viewColumns = await obtainViewColumns(politics[fileNoExtension].rules[i].resource)
-	// 						if (politics[fileNoExtension].rules[i].viewColumns[0] == '*') {
-	// 							politics[fileNoExtension].rules[i].viewName = 'personas'
-	// 						}
-	// 						else {
-	// 							var viewName = await createViewFromViewColumns(politics[fileNoExtension].rules[i], fileNoExtension, i)
-	// 							politics[fileNoExtension].rules[i].viewName = viewName
-	// 						}
-	// 					}
-	// 				}
-	// 			}
-	// 		}
-	// 	})
-	// })
 	var hasChanged = false
 
 	//passsing directoryPath and callback function
@@ -821,9 +672,6 @@ async function restartPolitics() {
 
 	//Then we have to add the new rules to politics
 	await addRulesToPoliticsObject()
-
-	//We create the views
-	await createViews()
 }
 
 /**
@@ -891,29 +739,7 @@ async function addOneRuleToPoliticsObjects(rule) {
 	}
 }
 
-/**
- * Creates the views of the politics object
- */
-async function createViews() {
-	//We create the views for the entire politics object
-	for (var type in politics) {
-		for (var j = 0; j < politics[type].rules.length; j++) {
-			if (politics[type].rules[j].action_type == 'GET') {
-				//In rule.viewName we store the name of the view, and in rule.columns the columns contained in the view.
-				//If there is a '*' in the rules, we do not have to create a view, you can access the whole table.
-				politics[type].rules[j].viewColumns = await obtainViewColumns(politics[type].rules[j].resource)
 
-				if (politics[type].rules[j].viewColumns[0] == '*') {
-					politics[type].rules[j].viewName = 'personas'
-				}
-				else {
-					var viewName = await createViewFromViewColumns(politics[type].rules[j], type, j)
-					politics[type].rules[j].viewName = viewName
-				}
-			}
-		}
-	}
-}
 
 /**
  * 
