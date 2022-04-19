@@ -19,7 +19,8 @@ spec:
     spec:
       containers:
         - name: auth-pod
-          image: roxax19/nodejs:0.3
+          #image: roxax19/nodejs:0.3
+          image: jtovartr/nodejs:0.4
           env:
             - name: NODE_EXTRA_CA_CERTS
               value: "/node/mount/ssl/myCA.pem"

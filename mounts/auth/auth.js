@@ -9,6 +9,7 @@ var jwt = require('jsonwebtoken')
 var express = require('express')
 var body_parser = require('body-parser') //necessary to add
 const util = require('util') // To "promisify" the queries
+const bcrypt = require('bcrypt');
 
 /* ===================================== Express Configuration ===================================== */
 var app = express()
@@ -127,7 +128,7 @@ app.post('/', async function(req, res) {
  */
 async function checkPassword(email, password) {
 	// We have to see if the authorization.
-	var result = await con.query('SELECT contrasena, clase, id FROM usuarios WHERE email=?', email)
+	var result = await con.query('SELECT contrasena, salt, clase, id FROM usuarios WHERE email=?', email)
 
 	//We see if the user exists
 	console.log('result[0] ' + result[0]) //returns an array with a json inside
@@ -137,16 +138,20 @@ async function checkPassword(email, password) {
 		console.log('The user does not exist')
 		return 1
 	}
+	
+	const saltRounds = 10;
 
-	console.log('passwordQuery: : ' + result[0].contrasena + '.')
-	console.log('password provided: ' + password + '.')
-
-	//We check if the password is correct
-	if (result[0].contrasena != password) {
-		console.log('The password is incorrect')
-		return 2
-	}
-
+        hast_calculated = bcrypt.hash(password, result[0].salt, function(err, hash) {
+        	// returns hash
+        	//We check if the password is correct
+        	console.log('hash_calculated: ' + hash)
+  		console.log('password_sql: : ' + result[0].contrasena)
+		if (result[0].contrasena != hash) {
+			console.log('The password is incorrect')
+			return 2
+		}
+  	});
+  	
 	//If I get this far, everything is OK. I return the result of the query
 	console.log('type: ' + result[0].clase)
 	return result[0] //The json object of the query inside the array.
