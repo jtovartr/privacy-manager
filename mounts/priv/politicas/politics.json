@@ -4,7 +4,7 @@
 		{
 			"action_type": "GET",
 			"privacy_method": "Exact",
-			"resource": "SELECT nombre, edad, lat, lon FROM personas",
+			"resource": "SELECT name, age, lat, lon FROM personas",
 			"conditions": [
 				{
 					"requester": {
@@ -22,7 +22,7 @@
 		{
 			"action_type": "GET",
 			"privacy_method": "MaxNoise",
-			"resource": "SELECT profesion, sueldo FROM personas",
+			"resource": "SELECT job, salary FROM personas",
 			"conditions": [
 				{
 					"requester": {
@@ -35,7 +35,7 @@
 		{
 			"action_type": "GET",
 			"privacy_method": "MinNoise",
-			"resource": "SELECT enfermedad, temperatura, pulso FROM personas",
+			"resource": "SELECT disease, temperature, pulse FROM personas",
 			"conditions": [
 				{
 					"requester": {
@@ -48,7 +48,7 @@
 		{
 			"action_type": "GET",
 			"privacy_method": "Generalization",
-			"resource": "SELECT enfermedad, temperatura, pulso FROM personas",
+			"resource": "SELECT disease, temperature, pulse FROM personas",
 			"conditions": [
 				{
 					"requester": {
@@ -64,9 +64,8 @@
 			"resource": "SELECT * FROM personas",
 			"attributes": [
 				{
-					"identifying": "nombre",
-					"quasiidentifying": "temperatura, pulso",
-					"insensitive": "profesion, id, edad, lat, lon, sueldo, enfermedad",
+					"identifying": "name, id",
+					"insensitive": "temperature, pulse",
 					"level": "3"
 				}
 			],

@@ -1,0 +1,49 @@
+{
+	"categorical": {
+		"disease": {
+			"common": {
+				"respiratory": [
+					"SARS",
+					"pneumonia",
+					"bronchitis"
+				],
+				"digestive": [
+					"gastric flu",
+					"gastric ulcer",
+					"intestinal cancer"
+				]
+			}
+		},
+		"job": {
+			"expert": {
+				"enginer": [
+					"computer eng",
+					"mining eng",
+					"software eng"
+				]
+			},
+			"artist": {
+				"painter": [
+					"cubist painter",
+					"realist painter"
+				]
+			}
+		}
+	},
+	"numerical": {
+		"age": {
+			"min": 0,
+			"max": 100,
+			"jump": 10
+		},
+		"salary": {
+			"min": 0,
+			"max": 150000,
+			"jump": 10000
+		}
+	},
+	"redaction": [
+		"lat",
+		"lon"
+	]
+}

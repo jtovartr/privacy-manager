@@ -1,10 +1,10 @@
 {
 	"personas": {
 		"personales": {
-			"nombre": {
+			"name": {
 				"type": "string"
 			},
-			"edad": {
+			"age": {
 				"type": "number",
 				"unit": "years",
 				"maxNoise": 20
@@ -23,27 +23,27 @@
 			}
 		},
 		"trabajo": {
-			"profesion": {
+			"job": {
 				"type": "string"
 			},
-			"sueldo": {
+			"salary": {
 				"type": "number",
 				"unit": "euros",
 				"maxNoise": 30000
 			}
 		},
 		"salud": {
-			"pulso": {
+			"pulse": {
 				"type": "number",
 				"units": "bpm",
 				"maxNoise": 10
 			},
-			"temperatura": {
+			"temperature": {
 				"type": "number",
 				"unit": "degree celsius",
 				"maxNoise": 5
 			},
-			"enfermedad": {
+			"disease": {
 				"type": "string"
 			}
 		}
