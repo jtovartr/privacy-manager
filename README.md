@@ -110,17 +110,17 @@ You can add some preloaded data to the database for testing purposes. You should
 
 - Create "personas" table.
 ```
-CREATE TABLE `test`.`personas` ( `id` INT NOT NULL AUTO_INCREMENT , `nombre` VARCHAR(255) NOT NULL , `edad` INT NOT NULL , `lat` FLOAT NOT NULL , `lon` FLOAT NOT NULL , `profesion` VARCHAR(255) NOT NULL , `sueldo` INT NOT NULL , `pulso` INT NOT NULL , `temperatura` FLOAT NOT NULL , `enfermedad` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`))
+CREATE TABLE `test`.`personas` ( `id` INT NOT NULL AUTO_INCREMENT , `name` VARCHAR(255) NOT NULL , `age` INT NOT NULL , `lat` FLOAT NOT NULL , `lon` FLOAT NOT NULL , `job` VARCHAR(255) NOT NULL , `salary` INT NOT NULL , `pulse` INT NOT NULL , `temperature` FLOAT NOT NULL , `disease` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`))
 ```
 - Insert into "personas"
 ```
-INSERT INTO `personas` (`id`, `nombre`, `edad`, `lat`, `lon`, `profesion`, `sueldo`, `pulso`, `temperatura`, `enfermedad`) VALUES (NULL, 'Manuel Ruiz Ruiz', '21', '1234', '5678', 'Estudiante', '0', '60', '36', 'Sano'), (NULL, 'Alberto', '22', '123.567', '23.12344', 'Estudiante', '0', '59', '35.4', 'Sano'), (NULL, 'Juan', '34', '534.3521', '5363.3235', 'Ingeniero', '60000', '58', '38', 'Fiebre'), (NULL, 'Alvaro', '64', '984.1234', '734.565', 'Ingeniero', '70000', '66', '35.2', 'Sano'), (NULL, 'Miguel', '23', '546.234', '765.234', 'Médico', '90000', '67', '37.8', 'Fiebre'), (NULL, 'Ana', '3', '543.645', '123.456', 'Estudiante', '0', '61', '36.3', 'Sano'), (NULL, 'Elena', '43', '6.432534', '3.2345234', 'Ingeniero', '30000', '67', '35.8', 'Sano'), (NULL, 'Rocio', '70', '6546.3', '4563.2', 'Jubilado', '20000', '56', '35.4', 'Sano'), (NULL, 'Maria', '33', '867.6456', '342.123', 'Médico', '70000', '63', '36.5', 'Sano'), (NULL, 'Manuel Jesús', '23', '674.56', '4353.345', 'Médico', '50000', '69', '38.2', 'Fiebre') 
+INSERT INTO `personas` (`id`, `name`, `age`, `lat`, `lon`, `job`, `salary`, `pulse`, `temperature`, `disease`) VALUES (NULL, 'Manuel Ruiz Ruiz', '21', '1234', '5678', 'software eng', '0', '60', '36', 'SARS'), (NULL, 'Alberto', '22', '123.567', '23.12344', 'mining eng', '0', '59', '35.4', 'pneumonia'), (NULL, 'Juan', '34', '534.3521', '5363.3235', 'computer eng', '60000', '58', '38', 'bronchitis'), (NULL, 'Alvaro', '64', '984.1234', '734.565', 'cubist painter', '70000', '66', '35.2', 'gastric flu'), (NULL, 'Miguel', '23', '546.234', '765.234', 'realist painter', '90000', '67', '37.8', 'gastric ulcer'), (NULL, 'Ana', '3', '543.645', '123.456', 'software eng', '0', '61', '36.3', 'intestinal cancer'), (NULL, 'Elena', '43', '6.432534', '3.2345234', 'computer eng', '30000', '67', '35.8', 'SARS'), (NULL, 'Rocio', '70', '6546.3', '4563.2', 'mining eng', '20000', '56', '35.4', 'pneumonia'), (NULL, 'Maria', '33', '867.6456', '342.123', 'software eng', '70000', '63', '36.5', 'bronchitis'), (NULL, 'Manuel Jesús', '23', '674.56', '4353.345', 'computer eng', '50000', '69', '38.2', 'gastric flu') 
 ```
 - Create "usuarios" table
 ```
-CREATE TABLE `test`.`usuarios` ( `id` INT NOT NULL AUTO_INCREMENT , `email` VARCHAR(255) NOT NULL ,`contrasena` VARCHAR(255) NOT NULL , `clase` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`))
+CREATE TABLE `test`.`usuarios` ( `id` INT NOT NULL AUTO_INCREMENT , `email` VARCHAR(255) NOT NULL , `password` VARCHAR(255) NOT NULL ,`salt` VARCHAR(255) NOT NULL , `type` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`))
 ```
 - Insert into "usuarios"
 ```
-INSERT INTO `usuarios` (`id`, `email`, `contrasena`, `clase`) VALUES (NULL, 'a', 'a', 'admin') 
+INSERT INTO `usuarios` (`id`, `email`, `password`, `salt`, `type`) VALUES (NULL, 'nicslab', '$2b$10$yRmIctt/Mo.5mkceNy0fheeqwE6JJnTHmDPrvAoCiE0zv4a6KoStS', '$2b$10$yRmIctt/Mo.5mkceNy0fhe', 'admin') 
 ```

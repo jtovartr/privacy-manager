@@ -102,7 +102,7 @@ app.post('/', async function(req, res) {
 		else {
 			//Correct, I make the token (id, class) and return it 
 			//console.log({ id: result.id, clase: result.type })
-			var token = jwt.sign({ id: result.id, type: result.clase }, 'shhhhh', {
+			var token = jwt.sign({ id: result.id, type: result.type }, 'shhhhh', {
 				expiresIn: "1h"
 			})
 			var object = new Object()
@@ -128,7 +128,7 @@ app.post('/', async function(req, res) {
  */
 async function checkPassword(email, password) {
 	// We have to see if the authorization.
-	var result = await con.query('SELECT contrasena, salt, clase, id FROM usuarios WHERE email=?', email)
+	var result = await con.query('SELECT password, salt, type, id FROM usuarios WHERE email=?', email)
 
 	//We see if the user exists
 	console.log('result[0] ' + result[0]) //returns an array with a json inside
@@ -145,14 +145,14 @@ async function checkPassword(email, password) {
         	// returns hash
         	//We check if the password is correct
         	console.log('hash_calculated: ' + hash)
-  		console.log('password_sql: : ' + result[0].contrasena)
-		if (result[0].contrasena != hash) {
+  		console.log('password_sql: : ' + result[0].password)
+		if (result[0].password != hash) {
 			console.log('The password is incorrect')
 			return 2
 		}
   	});
   	
 	//If I get this far, everything is OK. I return the result of the query
-	console.log('type: ' + result[0].clase)
+	console.log('type: ' + result[0].type)
 	return result[0] //The json object of the query inside the array.
 }

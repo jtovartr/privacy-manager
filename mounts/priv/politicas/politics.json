@@ -84,7 +84,7 @@
 			"resource": "SELECT * FROM personas",
 			"attributes": [
 				{
-					"sensitive": "salary, disease",
+					"sensitive": "salary",
 					"identifying": "name, id",
 					"insensitive": "temperature, pulse",
 					"level": "3"
