@@ -48,4 +48,4 @@ spec:
     app: priv
   ports:
     - port: 8082
-  clusterIP: 10.152.183.202
+  clusterIP: ${PRIV}

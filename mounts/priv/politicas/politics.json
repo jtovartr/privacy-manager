@@ -79,6 +79,27 @@
 			]
 		},
 		{
+			"action_type": "GET",
+			"privacy_method": "LDiversity",
+			"resource": "SELECT * FROM personas",
+			"attributes": [
+				{
+					"sensitive": "salary, disease",
+					"identifying": "name, id",
+					"insensitive": "temperature, pulse",
+					"level": "3"
+				}
+			],
+			"conditions": [
+				{
+					"requester": {
+						"role": "admin",
+						"max_requests": "30"
+					}
+				}
+			]
+		},
+		{
 			"action_type": "PUSH",
 			"conditions": [
 				{

@@ -47,4 +47,4 @@ spec:
   ports:
     - port: 1880
   type: LoadBalancer
-  clusterIP: 10.152.183.210
+  clusterIP: ${NODERED}

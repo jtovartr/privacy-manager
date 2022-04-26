@@ -14,6 +14,6 @@ spec:
     targetPort: 3306
   selector:
     mysql: mysqlMaster
-  clusterIP: 10.152.183.137
+  clusterIP: ${MYSQL_MASTER}
 
 

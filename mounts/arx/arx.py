@@ -18,7 +18,7 @@ import json
 app = Flask(__name__)
 api = Api(app)
 
-
+# method that calculates the depth of the ontology
 def depth(d):
     if isinstance(d, dict):
         return 1 + (max(map(depth, d.values())) if d else 0)
@@ -74,7 +74,8 @@ def process_list(data, variable_depth, all_the_lists):
 
 def script(method, attributes, sql_query):
 	
-	arxaas = ARXaaS("http://10.152.183.204:8080") # connecting to online service
+	#arxaas = ARXaaS("http://10.152.183.204:8080") # connecting to online service
+	arxaas = ARXaaS("http://arxass.default.svc.cluster.local:8080") # connecting to online service
 
 	# ----------------------------------------------------#
 	#		CONNECTION TO THE DATABASE			
@@ -104,6 +105,7 @@ def script(method, attributes, sql_query):
 	
 	dataset = Dataset.from_pandas(data_df)
 	
+	# it is checked if there are categorical attributes in the ontology
 	if "categorical" in data:
 		data_categorical = data["categorical"]
 		for i in data_categorical:
@@ -111,9 +113,11 @@ def script(method, attributes, sql_query):
     			data_processed = procedure_json(data_categorical_aux)
     			all_the_lists = [[] for x in range(int(variable_depth - 1))]
     			process_list(data_processed, variable_depth - 1, all_the_lists)
+    			# we reverse the list
     			all_the_lists = all_the_lists[::-1]
+    			# we keep the lowest level since it contains the names of the diseases
     			list_diseases = all_the_lists[0]
-    		
+    			# creation of the hierarchy
     			order_based = OrderHierarchyBuilder()
     			for z in range(0, variable_depth - 2):
     				if z != variable_depth-2:
@@ -127,6 +131,7 @@ def script(method, attributes, sql_query):
     							order_hierarchy = arxaas.hierarchy(order_based, list_diseases)		
     							dataset.set_hierarchy(i, order_hierarchy)
 	
+	# it is checked if there are numerical attributes in the ontology
 	if "numerical" in data:
 		data_numerical = data["numerical"]
 		for i in data_numerical:
@@ -171,7 +176,8 @@ def script(method, attributes, sql_query):
 				if i == attr:
 					interval_hierarchy = arxaas.hierarchy(interval_based, data_df[i].tolist())
 					dataset.set_hierarchy(i, interval_hierarchy)
-					
+	
+	# it is checked if there are redaction attributes in the ontology			
 	if "redaction" in data:
 		data_redaction = data["redaction"]
 		redaction_based = RedactionHierarchyBuilder()
@@ -243,7 +249,7 @@ class General(Resource):
 		attributes = request.args.get('attributes[]')
 		sql_query = request.args.get('sql')
 		
-		# Both "method" and "attributes[]" are checked to see if they have value
+		# "method", "attributes[]" and "sql_query" are checked to see if they have value
 		if not method:
 			return "Privatization method not specified"
 		elif not attributes:
@@ -253,6 +259,8 @@ class General(Resource):
 		else:
 			jsonstring = script(method, attributes, sql_query)
 			return json.loads(jsonstring)
+			#return jsonstring
+		
 
 
 

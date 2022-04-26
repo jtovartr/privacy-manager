@@ -41,6 +41,6 @@ spec:
   - name: mqtt
     port: 1883
     targetPort: 1883
-  clusterIP: 10.152.183.240
+  clusterIP: ${MQTTIMG}
   type: LoadBalancer
 

@@ -49,4 +49,4 @@ spec:
   ports:
     - port: 8083
       targetPort: 8083
-  clusterIP: 10.152.183.205
+  clusterIP: ${ARX}

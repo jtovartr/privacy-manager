@@ -50,4 +50,4 @@ spec:
   ports:
     - port: 8081
   type: LoadBalancer
-  clusterIP: 10.152.183.201
+  clusterIP: ${AUTH}

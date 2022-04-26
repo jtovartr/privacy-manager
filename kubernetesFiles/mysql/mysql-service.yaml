@@ -29,7 +29,7 @@ spec:
     targetPort: 3306
   selector:
     app: mysql
-  clusterIP: 10.152.183.232
+  clusterIP: ${MYSQL}
 
 
 

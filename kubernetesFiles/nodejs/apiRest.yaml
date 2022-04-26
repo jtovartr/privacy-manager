@@ -51,4 +51,4 @@ spec:
   ports:
     - port: 8080
   type: LoadBalancer
-  clusterIP: 10.152.183.200
+  clusterIP: ${APIREST}
