@@ -28,22 +28,22 @@ def on_message(client, userdata, msg):
     #Vamos a almacenar en este orden:
     #   tabla personas
     #       columna id (AI)
-    #       columna nombre
-    #       columna edad
+    #       columna name
+    #       columna age
     #       columna lat
     #       columna lon
-    #       columna profesion
-    #       columna sueldo
-    #       columna pulso
-    #       columna temperatura
-    #       columna enfermedad 
+    #       columna job
+    #       columna salary
+    #       columna pulse
+    #       columna temperature
+    #       columna disease 
 
     #Comprobamos que se han introducido todos los valores
     print('len: ' + str(len(payloadTroceado)))
     print()
     if (len(payloadTroceado) == 9):
       print('Me meto en ID nuevo')
-      sql = "INSERT INTO personas (nombre, edad, lat, lon, profesion, sueldo, pulso, temperatura, enfermedad) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+      sql = "INSERT INTO personas (name, age, lat, lon, job, salary, pulse, temperature, disease) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
       val = payloadTroceado
       try:
         mycursor.execute(sql, val)
@@ -65,7 +65,7 @@ client.on_message = on_message
 
 # Nos conectamos con el broker
 print("Me intento conectar")
-client.connect("10.152.183.240", 1883, 60)
+#client.connect("10.152.183.240", 1883, 60)
 client.connect("mosquitto-broker.default.svc.cluster.local", 1883, 60)
 
 # Nos conectamos a la base de datos

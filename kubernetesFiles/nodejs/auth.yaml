@@ -27,7 +27,7 @@ spec:
           command:
             - bash
             - "-c"
-            - node auth.js
+            - node auth.js ${TIME_JWT}
           volumeMounts:
             - mountPath: /node/mount
               name: test-volume

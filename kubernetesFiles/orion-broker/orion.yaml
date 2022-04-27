@@ -39,3 +39,4 @@ spec:
     protocol: TCP
     targetPort: 1026
     nodePort: 30000
+  clusterIP: ${ORION}

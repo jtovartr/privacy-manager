@@ -22,7 +22,7 @@ spec:
             - containerPort: 80
           env:
             - name: PMA_HOST
-              value: 10.152.183.137
+              value: ${MYSQL_MASTER}
             - name: PMA_PORT
               value: "3306"
             - name: MYSQL_ROOT_PASSWORD
@@ -41,5 +41,6 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 80
+  clusterIP: ${PHPMYADMIN}
 
 

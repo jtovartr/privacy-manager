@@ -32,12 +32,15 @@ envsubst < nodejs/auth.yaml | microk8s.kubectl apply -f -
 #microk8s.kubectl apply -f nodejs/priv.yaml
 envsubst < nodejs/priv.yaml | microk8s.kubectl apply -f -
 
-microk8s.kubectl apply -f phpmyadmin/phpmyadmin.yaml
+#microk8s.kubectl apply -f phpmyadmin/phpmyadmin.yaml
+envsubst < phpmyadmin/phpmyadmin.yaml | microk8s.kubectl apply -f -
+
 microk8s.kubectl apply -f phpmyadmin/ingress.yaml
 
 #microk8s.kubectl apply -f nodeRED/nodered.yaml
 envsubst < nodeRED/nodered.yaml | microk8s.kubectl apply -f -
 
-microk8s.kubectl apply -f orion-broker/orion.yaml
+#microk8s.kubectl apply -f orion-broker/orion.yaml
+envsubst < orion-broker/orion.yaml | microk8s.kubectl apply -f -
 
 microk8s.kubectl apply -f connector/connector.yaml

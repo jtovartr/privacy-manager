@@ -264,7 +264,7 @@ async function enterData(data) {
 
 	try {
 		var result = await con.query(
-			'INSERT INTO personas (nombre, edad, lat, lon, profesion, sueldo, pulso, temperatura, enfermedad) VALUES (?,?,?,?,?,?,?,?,?)',
+			'INSERT INTO personas (name, age, lat, lon, job, salary, pulse, temperature, disease) VALUES (?,?,?,?,?,?,?,?,?)',
 			data_split
 		)
 	} catch (err) {

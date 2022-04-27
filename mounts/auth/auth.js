@@ -67,7 +67,6 @@ app.get('/', function(req, res) {
 
 app.post('/', async function(req, res) {
 	//A hash should be stored instead of the password.
-
 	//We check if they send me email or user, token or nothing.
 	if (typeof req.body.token !== 'undefined') {
 		//token has been sent
@@ -103,7 +102,7 @@ app.post('/', async function(req, res) {
 			//Correct, I make the token (id, class) and return it 
 			//console.log({ id: result.id, clase: result.type })
 			var token = jwt.sign({ id: result.id, type: result.type }, 'shhhhh', {
-				expiresIn: "1h"
+				expiresIn: process.argv[2]
 			})
 			var object = new Object()
 			object.token = token
