@@ -503,13 +503,16 @@ async function processData(data) {
 				processed_data : await noise(result, 'personas', 1)
 			})
 		}
-		/*
 		else if (data[i].privacy_method == 'Generalization') {
 			//We call the generalize module
 			try {
 				//Dado que en un futuro quitaremos esta conexion, la dejamos sin ssl
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
-				var response = await axios.get(gen)
+				var response = await axios.get(gen, {
+					params: {
+						sql: query
+					}
+				})
 
 				processed_data.push({
 					privacy_method  : data[i].privacy_method,
@@ -519,7 +522,6 @@ async function processData(data) {
 				console.log(error)
 			}
 		}
-		*/
 		else if (data[i].privacy_method == 'KAnonimity') {
 			//We call the KAnonimity module
 			try {	

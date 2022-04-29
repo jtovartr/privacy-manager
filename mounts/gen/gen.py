@@ -23,24 +23,24 @@ api = Api(app)
 #CONSTANTES
 names = (
     'id',
-    'nombre',
+    'name',
     'lat', 
     'lon',
-    'profesion',
-    'sueldo',
-    'pulso',
-    'temperatura',
-    'enfermedad'
+    'job',
+    'salary',
+    'pulse',
+    'temperature',
+    'disease'
 )
 
 categorical = set((
-    'nombre',
-    'profesion',
-    'enfermedad'
+    'name',
+    'job',
+    'disease'
 ))
 
-feature_columns = [ 'lat','lon', 'sueldo', 'pulso', 'temperatura']
-sensitive_column = 'profesion'
+feature_columns = [ 'lat','lon', 'salary', 'pulse', 'temperature']
+sensitive_column = 'job'
 
 # FUNCIONES
 
@@ -191,7 +191,7 @@ def is_t_close(df, partition, sensitive_column, global_freqs, p=0.2):
 
 # SCRIPT
 
-def script():
+def script(sql_query):
 
     #connection to the database
     #Este no tendría por que conectarse al master porque solo lee datos
@@ -206,7 +206,7 @@ def script():
 
     #We tried to collect the data from mysql instead of csv
     #df = pd.read_csv("./data/k-anonymity/my-adult.all.txt", sep=", ", header=None, names=names, index_col=False, engine='python');
-    df = pd.read_sql("select * from personas", mydb)
+    df = pd.read_sql(sql_query, mydb)
     print('----------------TABLA-------------------')
     print(df.head())
         
@@ -298,8 +298,9 @@ def script():
 
 class General(Resource):
     def get(self):
-        jsonstring = script()               
-        return json.loads(jsonstring)        
+    	sql_query = request.args.get('sql')
+    	jsonstring = script(sql_query)               
+    	return json.loads(jsonstring)        
 
         
 # Routes

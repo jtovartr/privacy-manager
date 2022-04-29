@@ -48,7 +48,7 @@
 		{
 			"action_type": "GET",
 			"privacy_method": "Generalization",
-			"resource": "SELECT disease, temperature, pulse FROM personas",
+			"resource": "SELECT * FROM personas",
 			"conditions": [
 				{
 					"requester": {
@@ -64,27 +64,6 @@
 			"resource": "SELECT * FROM personas",
 			"attributes": [
 				{
-					"identifying": "name, id",
-					"insensitive": "temperature, pulse",
-					"level": "3"
-				}
-			],
-			"conditions": [
-				{
-					"requester": {
-						"role": "admin",
-						"max_requests": "30"
-					}
-				}
-			]
-		},
-		{
-			"action_type": "GET",
-			"privacy_method": "LDiversity",
-			"resource": "SELECT * FROM personas",
-			"attributes": [
-				{
-					"sensitive": "salary",
 					"identifying": "name, id",
 					"insensitive": "temperature, pulse",
 					"level": "3"
