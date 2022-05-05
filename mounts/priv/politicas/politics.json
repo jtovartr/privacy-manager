@@ -3,63 +3,6 @@
 	"rules": [
 		{
 			"action_type": "GET",
-			"privacy_method": "Exact",
-			"resource": "SELECT name, age, lat, lon FROM personas",
-			"conditions": [
-				{
-					"requester": {
-						"role": "admin"
-					}
-				},
-				{
-					"requester": {
-						"role": "clase2",
-						"max_requests": "10"
-					}
-				}
-			]
-		},
-		{
-			"action_type": "GET",
-			"privacy_method": "MaxNoise",
-			"resource": "SELECT job, salary FROM personas",
-			"conditions": [
-				{
-					"requester": {
-						"role": "admin",
-						"max_requests": "30"
-					}
-				}
-			]
-		},
-		{
-			"action_type": "GET",
-			"privacy_method": "MinNoise",
-			"resource": "SELECT disease, temperature, pulse FROM personas",
-			"conditions": [
-				{
-					"requester": {
-						"role": "admin",
-						"max_requests": "30"
-					}
-				}
-			]
-		},
-		{
-			"action_type": "GET",
-			"privacy_method": "Generalization",
-			"resource": "SELECT * FROM personas",
-			"conditions": [
-				{
-					"requester": {
-						"role": "admin",
-						"max_requests": "30"
-					}
-				}
-			]
-		},
-		{
-			"action_type": "GET",
 			"privacy_method": "KAnonimity",
 			"resource": "SELECT * FROM personas",
 			"attributes": [

@@ -89,9 +89,15 @@ def script(method, attributes, sql_query):
 	passwd="",
 	database="test"
 	)
+	
+	where = ""
+	if 'WHERE' in sql_query:
+		where = sql_query[sql_query.index('WHERE'):]
+		
+	query = "select * from personas " + where
 
 	# Database query
-	data_df = pd.read_sql(sql_query, mydb)
+	data_df = pd.read_sql(query, mydb)
 	
 	# Opening JSON file
 	f = open('data.json')
@@ -229,11 +235,22 @@ def script(method, attributes, sql_query):
 	elif method == "TCloseness":
 		anon_result = arxaas.anonymize(dataset=dataset, privacy_models=[TClosenessEqualDistance(float(attributes['level']), attributes['sensitive'])])
 	
+	
+	
+	
+	
+	string_aux = sql_query[7:sql_query.index('FROM')-1]
+
+	list_sql = string_aux.split(',')
 
 	df = anon_result.dataset.to_dataframe()
-	out = df.to_json(orient='index')
 	
-	return out
+	if list_sql[0] != "*":	
+		df = df[list_sql]
+	
+	out = df.to_json(orient='index')
+	out_json = json.loads(out)
+	return out_json
 
 
 
@@ -258,8 +275,7 @@ class General(Resource):
 			return "The query to be performed has not been specified"
 		else:
 			jsonstring = script(method, attributes, sql_query)
-			return json.loads(jsonstring)
-			#return jsonstring
+			return jsonstring
 		
 
 
