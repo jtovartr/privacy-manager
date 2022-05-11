@@ -28,6 +28,8 @@ microk8s.start
 
 sudo microk8s status --wait-ready
 
+sudo apt-get install gettext-base
+
 #cd kubernetesFiles
 
 #sudo ./execute_yaml.sh

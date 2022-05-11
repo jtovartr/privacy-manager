@@ -5,7 +5,7 @@ A privacy system made for my Degree Final Project.
 
 ## Step 0
 
-***ADDED NEW INSTALLER "setup.sh" that involves Steps 1 to 4. You should have Python3 installed.***
+***ADDED NEW INSTALLER "setup.sh" that involves Steps 1 to 5. You should have Python3 installed.***
 
 ## Step 1
 
@@ -91,21 +91,29 @@ kubernetesFiles/nodeRED/nodered.yaml
 kubernetesFiles/mqttimg/mosquitto.yaml
 ```
 
+## Step 5
+
+envsubst needs to be installed in order to automate yaml files:
+
+```
+apt-get install gettext-base
+```
+
 You have to put the path to the folders inside mounts/ on this git.
 
-## Step 5
+## Step 6
 Now you have to wait for the system to be ready. You can check the status with ```microk8s kubectl get all -A```. When every pod and service is ready, you can deploy the privacy manager. 
 
 For deploying the whole system, you have to execute (if you are working with microk8s) kubernetesFiles/execute_yaml.sh. If you aren't, you can copy the kubectl commands and execute in a terminal.
 
-## Step 6
+## Step 7
 You will notice that everything is deployed correctly, except for the connector pod. It is trying to connect to the database, but mysql doesn't have the correct configuration. For it to work correctly, you have to enter the phpMyAdmin pod, and create the database with de following command:
 
 - Create database
 ```
 CREATE DATABASE test
 ```
-## Step 7 (optional)
+## Step 8 (optional)
 You can add some preloaded data to the database for testing purposes. You should execute this SQL queries in the phpMyAdmin pod.
 
 - Create "personas" table.
