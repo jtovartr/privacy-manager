@@ -32,6 +32,7 @@ sudo apt-get install gettext-base
 
 #cd kubernetesFiles
 
+#sudo ./set-vars.sh
 #sudo ./execute_yaml.sh
 
 #Token para entrar en el dashboard
