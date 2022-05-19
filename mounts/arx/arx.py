@@ -24,7 +24,7 @@ def depth(d):
         return 1 + (max(map(depth, d.values())) if d else 0)
     return 0
 
-
+# method that converts the ontology into a flattened json and calculates the number of children at each level
 def procedure_json(data):
     ret = {}
 
@@ -51,7 +51,7 @@ def procedure_json(data):
     process(data)
     return ret
 
-
+# method that reads the flatten json and stores the hierarchies in a list of lists
 def process_list(data, variable_depth, all_the_lists):
     variable_depth_aux = variable_depth
     for value in data.values():
@@ -74,7 +74,6 @@ def process_list(data, variable_depth, all_the_lists):
 
 def script(method, attributes, sql_query):
 	
-	#arxaas = ARXaaS("http://10.152.183.204:8080") # connecting to online service
 	arxaas = ARXaaS("http://arxass.default.svc.cluster.local:8080") # connecting to online service
 
 	# ----------------------------------------------------#
@@ -82,7 +81,6 @@ def script(method, attributes, sql_query):
 	# ----------------------------------------------------#
 
 	mydb = mysql.connector.connect(
-	#host="10.152.183.232", #mysql read
 	host="mysql-master.default.svc.cluster.local",
 	port="3306",
 	user="root",
@@ -90,10 +88,12 @@ def script(method, attributes, sql_query):
 	database="test"
 	)
 	
+	#getting the where of the query
 	where = ""
 	if 'WHERE' in sql_query:
 		where = sql_query[sql_query.index('WHERE'):]
-		
+	
+	#create the query
 	query = "select * from personas " + where
 
 	# Database query
@@ -102,13 +102,13 @@ def script(method, attributes, sql_query):
 	# Opening JSON file
 	f = open('data.json')
 
-	# returns JSON object as
-	# a dictionary
+	# returns JSON object as a dictionary
 	data = json.load(f)
-	# print("json: " + str(data) + "\n")
 
+	# Obtaining the depth of the ontology
 	variable_depth = depth(data)
 	
+	# transformation of data to dataset
 	dataset = Dataset.from_pandas(data_df)
 	
 	# it is checked if there are categorical attributes in the ontology
@@ -116,8 +116,11 @@ def script(method, attributes, sql_query):
 		data_categorical = data["categorical"]
 		for i in data_categorical:
     			data_categorical_aux = data_categorical[i]
+    			
     			data_processed = procedure_json(data_categorical_aux)
+    			# creation of the list of lists to store the hierarchies
     			all_the_lists = [[] for x in range(int(variable_depth - 1))]
+    			
     			process_list(data_processed, variable_depth - 1, all_the_lists)
     			# we reverse the list
     			all_the_lists = all_the_lists[::-1]
@@ -128,10 +131,12 @@ def script(method, attributes, sql_query):
     			for z in range(0, variable_depth - 2):
     				if z != variable_depth-2:
     					j = 0
+    					# iteration over the list to create the hierarchy levels
     					while j < len(all_the_lists[z + 1]):
     						order_based.level(z).add_group(all_the_lists[z + 1][j + 1], all_the_lists[z + 1][j])
     						j += 2
     					
+    					# assignment of the hierarchy created to the corresponding attribute
     					for attr in data_df:
     						if i == attr:
     							order_hierarchy = arxaas.hierarchy(order_based, list_diseases)		
@@ -145,15 +150,19 @@ def script(method, attributes, sql_query):
 			cont = 0
 			cont_interval = 0
 			cont_interval_aux = 1
+			# creation of the hierarchy
 			interval_based = IntervalHierarchyBuilder()
 			
+			#obtaining the values of the ontology
 			values = data_numerical_aux.values()
 			jump = list(values)[len(values) - 1]  # Convert to list and get last element
 			min = list(values)[0]
 			max = list(values)[len(values) - 2]
 			min_aux = min
 			jump_aux = jump
+			# Check that the jump value does not exceed the maximum value.
 			while jump_aux < max:
+				# Check that the min value does not exceed the maximum value.
 				while min_aux < max:
 					if cont == 0:
 						interval_based.add_interval(min_aux, jump_aux, str(min_aux) + '-' + str(jump_aux))
@@ -166,18 +175,20 @@ def script(method, attributes, sql_query):
 								interval_based.level(cont-1).add_group(2, str(min_aux) + '-' + str(jump_aux))
 							else:
 								interval_based.level(cont-1).add_group(1, str(min_aux) + '-' + str(jump_aux))
-					
+					# variable update
 					min_aux = jump_aux
 					jump_aux += jump
 					cont_interval += 1
-					
+				
+				# variable update	
 				jump = jump * 2
 				jump_aux = jump
 				min_aux = min
 				cont += 1
 				cont_interval_aux = cont_interval
 				cont_interval = 0
-					
+				
+			# assignment of the hierarchy created to the corresponding attribute	
 			for attr in data_df:
 				if i == attr:
 					interval_hierarchy = arxaas.hierarchy(interval_based, data_df[i].tolist())
@@ -186,7 +197,9 @@ def script(method, attributes, sql_query):
 	# it is checked if there are redaction attributes in the ontology			
 	if "redaction" in data:
 		data_redaction = data["redaction"]
+		# creation of the hierarchy
 		redaction_based = RedactionHierarchyBuilder()
+		# assignment of the hierarchy created to the corresponding attribute
 		for i in data_redaction:
 			redaction_hierarchy = arxaas.hierarchy(redaction_based, data_df[i].tolist())
 			dataset.set_hierarchy(i, redaction_hierarchy)
@@ -236,18 +249,19 @@ def script(method, attributes, sql_query):
 		anon_result = arxaas.anonymize(dataset=dataset, privacy_models=[TClosenessEqualDistance(float(attributes['level']), attributes['sensitive'])])
 	
 	
-	
-	
-	
+	# obtaining the attributes that the user wants to query
 	string_aux = sql_query[7:sql_query.index('FROM')-1]
-
+	
 	list_sql = string_aux.split(',')
 
+	# dataset anonymization
 	df = anon_result.dataset.to_dataframe()
 	
+	# If the attribute is other than '*', the data selected by the user is returned
 	if list_sql[0] != "*":	
 		df = df[list_sql]
 	
+	# transformation to json
 	out = df.to_json(orient='index')
 	out_json = json.loads(out)
 	return out_json

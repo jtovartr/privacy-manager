@@ -1,7 +1,7 @@
 {
 	"id": 0,
 	"rules": [
-		{
+{
 			"action_type": "GET",
 			"privacy_method": "Exact",
 			"resource": "SELECT name, age, lat, lon FROM personas",
@@ -116,4 +116,4 @@
 			]
 		}
 	]
-
+}
