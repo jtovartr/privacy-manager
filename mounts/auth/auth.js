@@ -28,7 +28,6 @@ var options = {
 
 /* ================== Database connection (made with "factory function" warper to use await) ================== */
 var dbConfig = {
-	//host     : '10.152.183.232', //mysql read
 	host     : 'mysql-master.default.svc.cluster.local',
 	user     : 'root',
 	password : '',
@@ -52,7 +51,6 @@ var con = makeDb(dbConfig)
 /* ===================================== Server Creation ===================================== */
 
 const port = 8081
-//app.listen(port, () => console.log('HTTP server listening on port ' + port));
 https.createServer(options, app).listen(port, () => console.log('HTTPS server listening on port ' + port))
 
 /* ===================================== GET ===================================== */

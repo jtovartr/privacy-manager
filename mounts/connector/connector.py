@@ -1,8 +1,6 @@
 import paho.mqtt.client as mqtt
 import mysql.connector
 
-print("hola")
-
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
@@ -16,8 +14,8 @@ def on_message(client, userdata, msg):
 
     print("Topic: "+msg.topic+" Payload: "+msg.payload)
 
-    # Los mensajes siguen el siguiente formato: 
-    #   tema: "perosna"
+    # Messages follow the following format: 
+    #   topic: "persona"
     #   payload: nombre, edad, lat, lon, profesion, sueldo, pulso, temperatura, enfermedad
 
     payloadTroceado=str(msg.payload).split(', ')
@@ -25,20 +23,20 @@ def on_message(client, userdata, msg):
 
     print("topic: "+topic+" valor: "+str(msg.payload))
 
-    #Vamos a almacenar en este orden:
-    #   tabla personas
-    #       columna id (AI)
-    #       columna name
-    #       columna age
-    #       columna lat
-    #       columna lon
-    #       columna job
-    #       columna salary
-    #       columna pulse
-    #       columna temperature
-    #       columna disease 
+    # We will store in this order:
+    #   table personas
+    #       column id (AI)
+    #       column name
+    #       column age
+    #       column lat
+    #       column lon
+    #       column job
+    #       column salary
+    #       column pulse
+    #       column temperature
+    #       column disease 
 
-    #Comprobamos que se han introducido todos los valores
+    # We check that all values have been entered
     print('len: ' + str(len(payloadTroceado)))
     print()
     if (len(payloadTroceado) == 9):
@@ -52,25 +50,23 @@ def on_message(client, userdata, msg):
       except mysql.connector.Error as err:
         print("Something went wrong: {}".format(err))   
     else:
-      print('No se han introducido los datos correctamente')
+      print('Data have not been entered correctly')
 
-# Creamos las propieddes del cliente
+# create the customer properties
 client = mqtt.Client(client_id="Connector")
 client.on_connect = on_connect
 client.on_message = on_message
 
-# Configuramos la conexion por TLS y con usr + pwd
+# Configure the connection via TLS and with usr + pwd
 # client.tls_set(ca_certs="ssl/myCA.pem", cert_reqs=mqtt.ssl.CERT_REQUIRED)
 # client.username_pw_set("manuel", password="manuel")
 
-# Nos conectamos con el broker
+# broker connection
 print("Me intento conectar")
-#client.connect("10.152.183.240", 1883, 60)
 client.connect("mosquitto-broker.default.svc.cluster.local", 1883, 60)
 
 # Nos conectamos a la base de datos
 mydb = mysql.connector.connect(
-  #host="10.152.183.137", #master
 	host="mysql-master.default.svc.cluster.local",
 	port="3306",
 	user="root",
@@ -78,7 +74,7 @@ mydb = mysql.connector.connect(
 	database="test"
 )
 
-#creamos el cursor
+# create the cursor
 mycursor = mydb.cursor()
 
 # Blocking call that processes network traffic, dispatches callbacks and

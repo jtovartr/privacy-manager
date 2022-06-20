@@ -45,7 +45,6 @@ const agentSSL = new https.Agent({
 
 /* ================== Database connection (made with "factory function" warper to use await) ================== */
 var dbConfig = {
-	//host     : '10.152.183.137', //mysql master
 	host   : 'mysql-master.default.svc.cluster.local',
 	user     : 'root',
 	password : '',
@@ -68,19 +67,12 @@ var con = makeDb(dbConfig)
 
 /* ===================================== Module addresses ===================================== */
 // -- HTTPS --
-//var gen = 'https://10.152.183.203:8083'
-//var gen = 'https://gen.default.svc.cluster.local:8083';
-
-// -- HTTP --
-//var gen = 'http://10.152.183.203:8083'
-//var arx = 'http://10.152.183.205:8083'
 
 var gen = 'http://gen.default.svc.cluster.local:8083'
 var arx = 'http://arx.default.svc.cluster.local:8083'
 
 /* ===================================== Server creation ===================================== */
 const port = 8082
-//app.listen(port, () => console.log('HTTP server listening on port ' + port));
 https.createServer(options, app).listen(port, () => console.log('HTTPS server listening on port ' + port))
 
 /* ===================================== Lectura configuracion ===================================== */
@@ -452,9 +444,9 @@ async function querysAVistas(typeUser, queryUser) {
 /**
  * 
  * @param {Array} data 
- * La estructura de datos es: [{privacy_method:________, datosSQL:_________}{}...]
+ * The data structure is: [{privacy_method:________, datosSQL:_________}{}...]
  * 
- * Devuelve: los data procesados
+ * Returns: processed data
  */
 async function processData(data) {
 	var processed_data = []
@@ -605,13 +597,13 @@ async function updateConfig() {
 
 		//listing all files using forEach
 		for (var i = 0; i < files.length; i++) {
-			// files[i] es el nombre del archivo. leemos todos los "politics*.json"
+			// files[i] is the name of the file. we read all the "politics*.json".
 
 			if (/^(config\.json)$/.test(files[i])) {
-				//Leemos el archivo
+				// We read the file
 				var auxJSON = fs.readFileSync(path.join(privacyRulesPath, files[i]))
 
-				//Almacenamos en config los roles existentes
+				// We store existing roles in config
 				config = JSON.parse(auxJSON)
 			}
 		}
@@ -773,7 +765,7 @@ async function updateRequestsCount(userId, method) {
  * @param {String} method 
  * @param {String} clase 
  * 
- * Comprueba si el numero de intentos realizados por el usuario supera el número máximo permitido
+ * Checks if the number of attempts made by the user exceeds the maximum number allowed
  * 
  */
 async function reachedMaxRequests(userId, method, type) {

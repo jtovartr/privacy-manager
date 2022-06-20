@@ -1,6 +1,6 @@
 #Modified by: Manuel Ruiz Ruiz
 # 
-# Esta API recibe un GET y devuelve la tabla entera anonimizada
+# This API receives a GET and returns the entire anonymized table
 
 import mysql.connector
 import pandas as pd
@@ -20,7 +20,7 @@ api = Api(app)
 
 # -- ANONYMITY --
 
-#CONSTANTES
+# CONSTANTS
 names = (
     'id',
     'name',
@@ -42,7 +42,7 @@ categorical = set((
 feature_columns = [ 'lat','lon', 'salary', 'pulse', 'temperature']
 sensitive_column = 'job'
 
-# FUNCIONES
+# FUNCTIONS
 
 def get_spans(df, partition, scale=None):
     spans = {}
@@ -196,7 +196,6 @@ def script(sql_query):
     #connection to the database
     #Este no tendría por que conectarse al master porque solo lee datos
     mydb = mysql.connector.connect(
-    #host="10.152.183.232", #mysql read
     host="mysql-master.default.svc.cluster.local",
     port="3306",
     user="root",
@@ -207,24 +206,20 @@ def script(sql_query):
     #We tried to collect the data from mysql instead of csv
     #df = pd.read_csv("./data/k-anonymity/my-adult.all.txt", sep=", ", header=None, names=names, index_col=False, engine='python');
     df = pd.read_sql(sql_query, mydb)
-    print('----------------TABLA-------------------')
     print(df.head())
         
     for name in categorical:
         df[name] = df[name].astype('category')
 
     full_spans = get_spans(df, df.index)
-    print('----------------SPANS-------------------')
     print(full_spans)
 
     finished_partitions = partition_dataset(df, feature_columns, sensitive_column, full_spans, is_k_anonymous)
-    print('----------------PARTITIONS-------------------')
     print(len(finished_partitions))
 
     indexes = build_indexes(df)
     column_x, column_y = feature_columns[:2]
     rects = get_partition_rects(df, finished_partitions, column_x, column_y, indexes, offsets=[0.0, 0.0])
-    print('----------------RECTS-------------------')
     print(rects[:10])
 
     # pl.figure(figsize=(20,20))
@@ -234,12 +229,10 @@ def script(sql_query):
     # pl.show()
 
     dfn = build_anonymized_dataset(df, finished_partitions, feature_columns, sensitive_column)
-    print('----------------DFN-------------------')
     print(dfn.sort_values(feature_columns+[sensitive_column]))
 
     finished_l_diverse_partitions = partition_dataset(df, feature_columns, sensitive_column, full_spans, lambda *args: is_k_anonymous(*args) and is_l_diverse(*args))
 
-    print('----------------L-DIVERSE-------------------')
     print(len(finished_l_diverse_partitions))
 
     column_x, column_y = feature_columns[:2]
@@ -254,7 +247,6 @@ def script(sql_query):
 
     dfl = build_anonymized_dataset(df, finished_l_diverse_partitions, feature_columns, sensitive_column)
     
-    print('----------------SORT-------------------')
     print(dfl.sort_values([column_x, column_y, sensitive_column]))
 
     global_freqs = {}
@@ -264,12 +256,10 @@ def script(sql_query):
         p = count/total_count
         global_freqs[value] = p
     
-    print('----------------FREQS-------------------')
     print(global_freqs)
 
     finished_t_close_partitions = partition_dataset(df, feature_columns, sensitive_column, full_spans, lambda *args: is_k_anonymous(*args) and is_t_close(*args, global_freqs))
 
-    print('----------------T-CLOSE-------------------')
     print(len(finished_t_close_partitions))
 
     dft = build_anonymized_dataset(df, finished_t_close_partitions, feature_columns, sensitive_column)

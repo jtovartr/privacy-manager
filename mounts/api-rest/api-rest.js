@@ -40,7 +40,6 @@ const agentSSL = new https.Agent({
 /* ================== Database connection (made with "factory function" warper to use await) ================== */
 
 var con = mysql.createConnection({
-	//host     : '10.152.183.137',
 	host     : 'mysql-master.default.svc.cluster.local',
 	user     : 'root',
 	password : '',
@@ -50,16 +49,12 @@ var con = mysql.createConnection({
 /* ===================================== Module addresses ===================================== */
 // -- HTTPS --
 
-//var auth = 'https://10.152.183.201:8081';
 var auth = 'https://auth.default.svc.cluster.local:8081'
 
-//var priv = 'http://10.152.183.202:8082';
 var priv = 'https://priv.default.svc.cluster.local:8082'
 
 /* ===================================== Server creation ===================================== */
 const port = 8080
-//app.listen(puerto, () => console.log('HTTP Server listening on port ' + port));
-//https.createServer(options, app).listen(puerto, () => console.log('HTTPS server listening on port ' + port))
 https.createServer(options, app).listen(port, () => console.log('HTTPS server listening on port ' + port))
 
 
@@ -106,7 +101,7 @@ app.post('/', function(req, res) {
 
 	//Check that the length of the data is correct
 	if (req.body.data.split(', ').length != 9) {
-		res.send('Longitud: ' + req.body.data.split(', ').length + 'Data entered incorrectly')
+		res.send('Lenght: ' + req.body.data.split(', ').length + 'Data entered incorrectly')
 		return
 	}
 
@@ -202,8 +197,6 @@ async function sendGETPriv(id, type, stringQuery) {
 	//For now we implement the GET
 
 	var response_sendGETPriv = ''
-	//var priv = 'http://10.152.183.202:8082';
-	//var priv = 'http://priv.default.svc.cluster.local:8082';
 	var params = {
 		id          : id,
 		type        : type,
@@ -232,8 +225,6 @@ async function sendPOSTPriv(type, id, data) {
 	//Por ahora implementamos el POST
 
 	var response_sendPOSTPriv = ''
-	//var priv = 'https://10.152.183.202:8082';
-	//var priv = 'https://priv.default.svc.cluster.local:8082';
 	var params = {
 		type  : type,
 		id    : id,
@@ -260,8 +251,6 @@ async function sendPOSTPriv(type, id, data) {
 async function sendDELETEPriv(type, idUser, idToDelete) {
 
 	var response_sendDELETEPriv = ''
-	//var priv = 'https://10.152.183.202:8082';
-	//var priv = 'https://priv.default.svc.cluster.local:8082';
 	var data = {
 		type       : type,
 		idUser     : idUser,
