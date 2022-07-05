@@ -45,5 +45,11 @@
 	"redaction": [
 		"lat",
 		"lon"
-	]
-}
+	],
+	"other": {
+		"name": "VARCHAR(255)",
+		"temperature": "FLOAT",
+		"pulse": "INT"
+	}
+		
+} 

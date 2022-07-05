@@ -71,6 +71,8 @@ spec:
         - name: mysql
           containerPort: 3306
         volumeMounts:
+        - name: mysql-initdb
+          mountPath: /docker-entrypoint-initdb.d
         - name: data
           mountPath: /var/lib/mysql
           subPath: mysql
@@ -151,6 +153,9 @@ spec:
             cpu: 100m
             memory: 100Mi
       volumes:
+      - name: mysql-initdb
+        configMap:
+          name: mysql-initdb-config
       - name: conf
         emptyDir: {}
       - name: config-map

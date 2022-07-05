@@ -31,7 +31,7 @@ microk8s.kubectl delete -n default service node-red
 microk8s.kubectl delete -n default ingress k8s-ingress
 microk8s.kubectl delete -n default ingress phpmyadmin-http-ingress
 
-
 microk8s.kubectl delete -n default configmap mysql
+microk8s.kubectl delete -n default configmap mysql-initdb-config
 
 microk8s.kubectl delete -n default statefulset mysql
