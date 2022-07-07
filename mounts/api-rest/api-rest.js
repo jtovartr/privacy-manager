@@ -8,6 +8,7 @@ var mysql = require('mysql')
 var jwt = require('jsonwebtoken')
 var express = require('express')
 var body_parser = require('body-parser') //necessary to add
+const util = require('util') // To "promisify" the queries
 const axios = require('axios')
 
 /* ===================================== Express Configuration ===================================== */
@@ -38,13 +39,26 @@ const agentSSL = new https.Agent({
 })
 
 /* ================== Database connection (made with "factory function" warper to use await) ================== */
-
-var con = mysql.createConnection({
+var dbConfig = {
 	host     : 'mysql-master.default.svc.cluster.local',
 	user     : 'root',
 	password : '',
 	database : 'test'
-})
+}
+
+function makeDb(config) {
+	const connection = mysql.createConnection(config)
+	return {
+		query(sql, args) {
+			return util.promisify(connection.query).call(connection, sql, args)
+		},
+		close() {
+			return util.promisify(connection.end).call(connection)
+		}
+	}
+}
+
+var con = makeDb(dbConfig)
 
 /* ===================================== Module addresses ===================================== */
 // -- HTTPS --
@@ -89,7 +103,7 @@ app.get('/', async function(req, res) {
 
 /* ===================================== POST ===================================== */
 
-app.post('/', function(req, res) {
+app.post('/', async function(req, res) {
 	console.log('req.body.token: ' + req.body.token)
 	console.log('req.body.data: ' + req.body.data)
 
@@ -98,11 +112,19 @@ app.post('/', function(req, res) {
 		res.send('No token or stringQuery entered')
 		return
 	}
-
-	//Check that the length of the data is correct
-	if (req.body.data.split(', ').length != 9) {
-		res.send('Lenght: ' + req.body.data.split(', ').length + 'Data entered incorrectly')
-		return
+	
+	try {
+		// the number of columns is obtained from the database
+		var number_columns = await con.query('SELECT count(*) AS number FROM information_schema.columns WHERE table_name=?', 'personas')
+		
+		//Check that the length of the data is correct. 
+		if (req.body.data.split(', ').length != number_columns[0].number-1) {
+			res.send('Lenght: ' + req.body.data.split(', ').length + 'Data entered incorrectly')
+			return
+		}
+	} catch (err) {
+		console.log(err)
+		console.log(query.sql)
 	}
 
 	//Obtain the type of token sent to us

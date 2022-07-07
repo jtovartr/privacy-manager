@@ -253,12 +253,16 @@ async function typeAccessAction(type, action) {
  */
 async function enterData(data) {
 	var data_split = data.split(', ')
-
+	var data_name = []
 	try {
-		var result = await con.query(
-			'INSERT INTO personas (name, age, lat, lon, job, salary, pulse, temperature, disease) VALUES (?,?,?,?,?,?,?,?,?)',
-			data_split
-		)
+		console.log('*********************************************************')
+		var columns_name = await con.query('SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ?', 'personas')
+		for (var i=1; i<columns_name.length; i++) {
+			data_name.push(columns_name[i].COLUMN_NAME)
+
+		}
+		console.log(data_name)
+		var result = await con.query('INSERT INTO personas (' + data_name + ') VALUES (?,?,?,?,?,?,?,?,?)', data_split)
 	} catch (err) {
 		console.log(err)
 		console.log(query.sql)

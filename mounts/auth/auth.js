@@ -124,8 +124,16 @@ app.post('/', async function(req, res) {
  * 2 if the password is not correct
  */
 async function checkPassword(email, password) {
-	// We have to see if the authorization.
-	var result = await con.query('SELECT password, salt, type, id FROM usuarios WHERE email=?', email)
+
+	try {
+		// We have to see if the authorization.
+		var result = await con.query('SELECT password, salt, type, id FROM usuarios WHERE email=?', email)
+		
+	} catch (err) {
+		console.log(err)
+		console.log(query.sql)
+	}
+
 
 	//We see if the user exists
 	console.log('result[0] ' + result[0]) //returns an array with a json inside
