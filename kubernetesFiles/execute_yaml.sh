@@ -37,3 +37,10 @@ envsubst < nodeRED/nodered.yaml | microk8s.kubectl apply -f -
 envsubst < orion-broker/orion.yaml | microk8s.kubectl apply -f -
 
 microk8s.kubectl apply -f connector/connector.yaml
+
+microk8s.kubectl apply -f mongodb/mongodb-statefulset.yaml
+envsubst < mongodb/mongodb-master-service.yaml | microk8s.kubectl apply -f -
+envsubst < mongodb/mongodb-service.yaml | microk8s.kubectl apply -f -
+microk8s.kubectl label pod mongo-0 "mongo=mongoMaster"
+
+envsubst < mongodb/prueba.yaml | microk8s.kubectl apply -f -

@@ -1,0 +1,12 @@
+[
+	"name",
+	"age",
+	"lat",
+	"lon",
+	"job",
+	"salary",
+	"pulse",
+	"temperature",
+	"disease"
+	
+]

@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+  labels:
+    app: mongo
+spec:
+  ports:
+  - name: mongo
+    port: 27017
+    targetPort: 27017
+  clusterIP: None
+  selector:
+    app: mongo
+    
+---
+# Client service for connecting to any MySQL instance for reads.
+# For writes, you must instead connect to the master: mysql-0.mysql.
+# Vamos a convertirlo en un nodeport
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-1
+  labels:
+    app: mongo
+spec:
+  ports:
+  - name: mongo
+    port: 27017
+    targetPort: 27017
+  selector:
+    app: mongo
+  clusterIP: ${MONGODB_1}

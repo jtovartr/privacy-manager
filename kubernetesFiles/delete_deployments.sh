@@ -35,3 +35,13 @@ microk8s.kubectl delete -n default configmap mysql
 microk8s.kubectl delete -n default configmap mysql-initdb-config
 
 microk8s.kubectl delete -n default statefulset mysql
+
+
+microk8s.kubectl delete -n default service mongo-0
+microk8s.kubectl delete -n default service mongo
+microk8s.kubectl delete -n default service mongo-1
+microk8s.kubectl delete -n default statefulset mongo
+
+microk8s.kubectl delete -n default service prueba
+
+microk8s.kubectl delete -n default deployment prueba

@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prueba
+  namespace: default
+  labels:
+    app: prueba
+    tier: backend
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prueba
+  template:
+    metadata:
+      labels:
+        app: prueba
+    spec:
+      containers:
+        - name: prueba-pod
+          image: jtovartr/nodejs_prueba
+          env:
+            - name: NODE_EXTRA_CA_CERTS
+              value: "/node/mount/ssl/myCA.pem"
+          command:
+            - bash
+            - "-c"
+            - node prueba.js
+          volumeMounts:
+            - mountPath: /node/mount
+              name: test-volume
+      volumes:
+        - name: test-volume
+          hostPath:
+            # directory location on host
+            path: /home/jesus/Escritorio/privacy-manager/mounts/mongodb
+            # this field is optional
+            type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prueba
+  namespace: default
+spec:
+  selector:
+    app: prueba
+  ports:
+    - port: 8081
+  type: LoadBalancer
+  clusterIP: ${PRUEBA}
