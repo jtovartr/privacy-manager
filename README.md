@@ -91,6 +91,8 @@ kubernetesFiles/nodeRED/nodered.yaml
 kubernetesFiles/mqttimg/mosquitto.yaml
 ```
 
+You have to put the path to the folders inside mounts/ on this git.
+
 ## Step 5
 
 envsubst needs to be installed in order to automate yaml files:
@@ -99,21 +101,30 @@ envsubst needs to be installed in order to automate yaml files:
 apt-get install gettext-base
 ```
 
-You have to put the path to the folders inside mounts/ on this git.
-
 ## Step 6
+In the same way that policies can be specified for each user, each user must specify the data that their database will have and the privatization hierarchies that will be performed on it.
+
+There is the file [data.json](https://github.com/jtovartr/privacy-manager/blob/main/mounts/arx/data.json), in which the hierarchies will be specified and, at the same time, the database attributes, which will later be read automatically to create the database.
+
+## Step 7
+In order to be able to use the field level encryption feature of MongoDB, an IAM user and a Private Key must be generated for use in the [priv-mongo.js](https://github.com/jtovartr/privacy-manager/blob/main/mounts/mongodb/prueba.js) file.
+
+
+## Step 8
+
+## Step 7
 Now you have to wait for the system to be ready. You can check the status with ```microk8s kubectl get all -A```. When every pod and service is ready, you can deploy the privacy manager. 
 
 For deploying the whole system, you have to execute (if you are working with microk8s) kubernetesFiles/execute_yaml.sh. If you aren't, you can copy the kubectl commands and execute in a terminal.
 
-## Step 7
+## Step 8
 You will notice that everything is deployed correctly, except for the connector pod. It is trying to connect to the database, but mysql doesn't have the correct configuration. For it to work correctly, you have to enter the phpMyAdmin pod, and create the database with de following command:
 
 - Create database
 ```
 CREATE DATABASE test
 ```
-## Step 8 (optional)
+## Step 9 (optional)
 You can add some preloaded data to the database for testing purposes. You should execute this SQL queries in the phpMyAdmin pod.
 
 - Create "personas" table.
