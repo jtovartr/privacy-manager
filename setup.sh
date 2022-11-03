@@ -35,6 +35,6 @@ sudo apt-get install gettext-base
 #sudo ./set-vars.sh
 #sudo ./execute_yaml.sh
 
-#Token para entrar en el dashboard
+#Token to access the dashboard
 #token=$(microk8s kubectl -n kube-system get secret | grep default-token | cut -d " " -f1)
 #microk8s kubectl -n kube-system describe secret $token

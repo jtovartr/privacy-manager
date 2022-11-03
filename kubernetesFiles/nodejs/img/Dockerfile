@@ -1,10 +1,10 @@
 FROM node:12.14
 
-#Preparar el directorio dentro de la imagen
+#Prepare the directory inside the image
 RUN mkdir -p /node
 WORKDIR /node
 
-#instalar las librerias deseadas
+#Install the desired libraries
 RUN npm install mysql
 RUN npm install express
 RUN npm install body-parser
@@ -13,6 +13,6 @@ RUN npm install helmet
 RUN npm install axios
 RUN npm install random-number-csprng
 
-#Cuando nos hemos bajado los modulos, cambiamos de directorio para no machacarlo
+#When we have downloaded the modules, we change the directory so as not to destroy it.
 RUN mkdir -p /node/mount
 WORKDIR /node/mount

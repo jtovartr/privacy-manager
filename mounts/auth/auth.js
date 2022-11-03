@@ -3,7 +3,7 @@
 var https = require('https')
 var http = require('http')
 var fs = require('fs')
-var helmet = require('helmet') //Para HSTS, necessary to add
+var helmet = require('helmet') //For HSTS, necessary to add
 var mysql = require('mysql')
 var jwt = require('jsonwebtoken')
 var express = require('express')

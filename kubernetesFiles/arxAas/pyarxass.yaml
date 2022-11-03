@@ -19,10 +19,7 @@ spec:
           image: navikt/arxaas
           ports:
             - containerPort: 8080
-
 ---
-
-
 apiVersion: v1
 kind: Service
 metadata:

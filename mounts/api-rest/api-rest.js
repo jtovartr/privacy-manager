@@ -244,7 +244,6 @@ async function sendGETPriv(id, type, stringQuery) {
 }
 
 async function sendPOSTPriv(type, id, data) {
-	//Por ahora implementamos el POST
 
 	var response_sendPOSTPriv = ''
 	var params = {

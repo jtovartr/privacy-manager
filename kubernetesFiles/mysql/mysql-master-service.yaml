@@ -1,6 +1,3 @@
-# Le añadimos esta etiqueta al mysql-0 con el comando:
-# kubectl label pods mysql-0 mysql=mysqlMaster
-
 apiVersion: v1
 kind: Service
 metadata:

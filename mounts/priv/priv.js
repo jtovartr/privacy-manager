@@ -502,7 +502,6 @@ async function processData(data) {
 		else if (data[i].privacy_method == 'Generalization') {
 			//We call the generalize module
 			try {
-				//Dado que en un futuro quitaremos esta conexion, la dejamos sin ssl
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
 				var response = await axios.get(gen, {
 					params: {
@@ -521,7 +520,6 @@ async function processData(data) {
 		else if (data[i].privacy_method == 'KAnonimity') {
 			//We call the KAnonimity module
 			try {	
-				//Dado que en un futuro quitaremos esta conexion, la dejamos sin ssl
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
 				
 				//The privatization method and the data type are passed as parameters
@@ -543,7 +541,6 @@ async function processData(data) {
 		else if (data[i].privacy_method == 'LDiversity') {
 			//We call the LDiversity module
 			try {
-				//Dado que en un futuro quitaremos esta conexion, la dejamos sin ssl
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
 				
 				//The privatization method and the data type are passed as parameters
@@ -566,7 +563,6 @@ async function processData(data) {
 		else if (data[i].privacy_method == 'TCloseness') {
 			//We call the TCloseness module
 			try {
-				//Dado que en un futuro quitaremos esta conexion, la dejamos sin ssl
 				//var response = await axios.get(gen, { httpsAgent: agentSSL })
 				
 				//The privatization method and the data type are passed as parameters

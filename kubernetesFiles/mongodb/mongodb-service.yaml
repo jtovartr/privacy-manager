@@ -11,12 +11,8 @@ spec:
     targetPort: 27017
   clusterIP: None
   selector:
-    app: mongo
-    
+    app: mongo    
 ---
-# Client service for connecting to any MySQL instance for reads.
-# For writes, you must instead connect to the master: mysql-0.mysql.
-# Vamos a convertirlo en un nodeport
 apiVersion: v1
 kind: Service
 metadata:

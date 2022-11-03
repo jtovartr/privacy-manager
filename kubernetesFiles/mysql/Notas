@@ -1,3 +1,0 @@
-Los yaml son del tutorial de la pagina de kubernetes. Despues de todos los archivos en la pagina aparece la explicacion de los scripts.
-
-Para acceder al monitor mysql de forma muy basica, basta con hacer kubectl exec -it mysql.0 -- mysql

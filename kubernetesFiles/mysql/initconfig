@@ -1,8 +1,0 @@
-#!/bin/bash
-
-microk8s.kubectl apply -f configmap.yaml
-microk8s.kubectl apply -f mysql-statefulset.yaml
-microk8s.kubectl apply -f mysql-master-service.yaml
-microk8s.kubectl apply -f mysql-service.yaml
-
-microk8s.kubectl label pod mysql-0 "mysql=mysqlMaster"

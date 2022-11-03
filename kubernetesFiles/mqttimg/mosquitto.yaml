@@ -43,4 +43,3 @@ spec:
     targetPort: 1883
   clusterIP: ${MQTTIMG}
   type: LoadBalancer
-

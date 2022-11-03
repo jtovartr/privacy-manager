@@ -35,9 +35,6 @@ spec:
             # this field is optional
             type: Directory
 ---
-#Al conector no se conecta nadie, es él el que inicia las conexiones
-#Por lo tanto no le hace falta entrypoint
-
 apiVersion: v1
 kind: Service
 metadata:
