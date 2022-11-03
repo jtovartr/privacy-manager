@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: prueba
+  name: priv-mongo
   namespace: default
   labels:
-    app: prueba
+    app: priv-mongo
     tier: backend
     version: v1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: prueba
+      app: priv-mongo
   template:
     metadata:
       labels:
-        app: prueba
+        app: priv-mongo
     spec:
       containers:
-        - name: prueba-pod
+        - name: priv-mongo-pod
           image: jtovartr/nodejs_prueba
           env:
             - name: NODE_EXTRA_CA_CERTS
@@ -26,7 +26,7 @@ spec:
           command:
             - bash
             - "-c"
-            - node prueba.js
+            - node priv-mongo.js
           volumeMounts:
             - mountPath: /node/mount
               name: test-volume
@@ -41,12 +41,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: prueba
+  name: priv-mongo
   namespace: default
 spec:
   selector:
-    app: prueba
+    app: priv-mongo
   ports:
     - port: 8081
   type: LoadBalancer
-  clusterIP: ${PRUEBA}
+  clusterIP: ${PRIV_MONGO}

@@ -14,4 +14,4 @@ echo "export ORION=10.152.183.173" >> $HOME/.bashrc
 echo "export TIME_JWT=1h" >> $HOME/.bashrc
 echo "export MONGODB_0=10.152.183.54" >> $HOME/.bashrc
 echo "export MONGODB_1=10.152.183.55" >> $HOME/.bashrc
-echo "export PRUEBA=10.152.183.50" >> $HOME/.bashrc
+echo "export PRIV_MONGO=10.152.183.50" >> $HOME/.bashrc

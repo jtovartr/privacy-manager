@@ -43,4 +43,4 @@ envsubst < mongodb/mongodb-master-service.yaml | microk8s.kubectl apply -f -
 envsubst < mongodb/mongodb-service.yaml | microk8s.kubectl apply -f -
 microk8s.kubectl label pod mongo-0 "mongo=mongoMaster"
 
-envsubst < mongodb/prueba.yaml | microk8s.kubectl apply -f -
+envsubst < mongodb/priv-mongo.yaml | microk8s.kubectl apply -f -
