@@ -89,6 +89,7 @@ kubernetesFiles/nodejs/auth.yaml
 kubernetesFiles/nodejs/priv.yaml
 kubernetesFiles/nodeRED/nodered.yaml
 kubernetesFiles/mqttimg/mosquitto.yaml
+kubernetesFiles/arx/arx.yaml
 ```
 
 You have to put the path to the folders inside mounts/ on this git.
@@ -107,7 +108,11 @@ In the same way that policies can be specified for each user, each user must spe
 There is the file [data.json](https://github.com/jtovartr/privacy-manager/blob/main/mounts/arx/data.json), in which the hierarchies will be specified and, at the same time, the database attributes, which will later be read automatically to create the database.
 
 ## Step 7
-In order to be able to use the field level encryption feature of MongoDB, an IAM user and a Private Key must be generated for use in the [priv-mongo.js](https://github.com/jtovartr/privacy-manager/blob/main/mounts/mongodb/prueba.js) file.
+In order to be able to use the field level encryption feature of MongoDB, a GPC service accout and Customer Master Key must be generated for use in the [priv-mongo.js](https://github.com/jtovartr/privacy-manager/blob/main/mounts/mongodb/prueba.js) file. To do this you can follow the links below.
+
+[GPC-service-account](https://www.mongodb.com/docs/manual/core/csfle/tutorials/gcp/gcp-automatic/#register-a-gcp-service-account)
+[GPC-customer-master-key](https://www.mongodb.com/docs/manual/core/csfle/tutorials/gcp/gcp-automatic/#create-a-gcp-customer-master-key)
+[GPC-create-dek](https://www.mongodb.com/docs/manual/core/csfle/tutorials/gcp/gcp-automatic/#create-a-data-encryption-key)
 
 ## Step 8
 Now you have to wait for the system to be ready. You can check the status with ```microk8s kubectl get all -A```. When every pod and service is ready, you can deploy the privacy manager. 
@@ -118,4 +123,4 @@ For deploying the whole system, you have to execute (if you are working with mic
 
 At this point, the database contains two tables. The first one is usuarios, which has a default user (admin). The other table is personas, which is empty.
 
-These tables are created automatically thanks to the [generateTables.py](https://github.com/jtovartr/privacy-manager/blob/main/kubernetesFiles/mysql/generateTables.py) script. To create the personas table, the [data.json](https://github.com/jtovartr/privacy-manager/blob/main/mounts/arx/data.json) file is read and depending on the type of attribute in the file an appropriate MySQL value type will be assigned.
+These tables are automatically created by the script [generateTables.py].(https://github.com/jtovartr/privacy-manager/blob/main/kubernetesFiles/mysql/generateTables.py) script. To create the personas table, the [data.json](https://github.com/jtovartr/privacy-manager/blob/main/mounts/arx/data.json) file is read and depending on the type of attribute in the file an appropriate MySQL value type will be assigned.

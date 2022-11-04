@@ -8,7 +8,8 @@ path_list=["kubernetesFiles/connector/connector.yaml",
 "kubernetesFiles/nodejs/auth.yaml",
 "kubernetesFiles/nodejs/priv.yaml",
 "kubernetesFiles/nodeRED/nodered.yaml",
-"kubernetesFiles/mqttimg/mosquitto.yaml"
+"kubernetesFiles/mqttimg/mosquitto.yaml",
+"kubernetesFiles/arx/arx.yaml"
 ]
 
 cwd = os.getcwd()
@@ -23,9 +24,9 @@ for i in path_list:
     list_lines = f.readlines()
 
     for i in range (len(list_lines)):
-        if "path: /home/manuel/Proyectos" in list_lines[i]:
+        if "path: /home/jesus/Proyectos" in list_lines[i]:
             print(list_lines[i])
-            list_lines[i]=list_lines[i].replace("/home/manuel/Proyectos",cwd)
+            list_lines[i]=list_lines[i].replace("/home/jesus/Proyectos",cwd)
             print(list_lines[i])
 
     f_write = open(fd, "w")
