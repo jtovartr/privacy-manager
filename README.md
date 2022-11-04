@@ -125,4 +125,4 @@ For deploying the whole system, you have to execute (if you are working with mic
 
 At this point, the database contains two tables. The first one is usuarios, which has a default user (admin). The other table is personas, which is empty.
 
-These tables are automatically created by the script [generateTables.py].(https://github.com/jtovartr/privacy-manager/blob/main/kubernetesFiles/mysql/generateTables.py) script. To create the personas table, the [data.json](https://github.com/jtovartr/privacy-manager/blob/main/mounts/arx/data.json) file is read and depending on the type of attribute in the file an appropriate MySQL value type will be assigned.
+These tables are automatically created by the script [generateTables.py](https://github.com/jtovartr/privacy-manager/blob/main/kubernetesFiles/mysql/generateTables.py) script. To create the personas table, the [data.json](https://github.com/jtovartr/privacy-manager/blob/main/mounts/arx/data.json) file is read and depending on the type of attribute in the file an appropriate MySQL value type will be assigned.
