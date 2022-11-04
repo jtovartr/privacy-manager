@@ -21,6 +21,6 @@ sql_sentence += "PRIMARY KEY(id));"
 
 print(sql_sentence)
 
-sql_sentence2 = "    CREATE TABLE usuarios (id INT NOT NULL AUTO_INCREMENT, email VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, salt VARCHAR(255) NOT NULL, type VARCHAR(255) NOT NULL, PRIMARY KEY (id));"
+print("    CREATE TABLE usuarios (id INT NOT NULL AUTO_INCREMENT, email VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, salt VARCHAR(255) NOT NULL, type VARCHAR(255) NOT NULL, PRIMARY KEY (id));")
 
-print(sql_sentence2)
+print("    INSERT INTO usuarios (id, email, password, salt, type) VALUES (NULL, 'nicslab', '$2b$10$yRmIctt/Mo.5mkceNy0fheeqwE6JJnTHmDPrvAoCiE0zv4a6KoStS', '$2b$10$yRmIctt/Mo.5mkceNy0fhe', 'admin');")

@@ -118,6 +118,12 @@ Now you have to wait for the system to be ready. You can check the status with `
 For deploying the whole system, you have to execute (if you are working with microk8s) kubernetesFiles/execute_yaml.sh. If you aren't, you can copy the kubectl commands and execute in a terminal.
 
 ## Step 8
+
+At this point, the database contains two tables. The first one is usuarios, which has a default user (admin). The other table is personas, which is empty.
+
+These tables are created automatically thanks to the [generateTables.py](https://github.com/jtovartr/privacy-manager/blob/main/kubernetesFiles/mysql/generateTables.py) script. To create the personas table, the [data.json](https://github.com/jtovartr/privacy-manager/blob/main/mounts/arx/data.json) file is read and depending on the type of attribute in the file an appropriate MySQL value type will be assigned.
+
+## Step 8
 You will notice that everything is deployed correctly, except for the connector pod. It is trying to connect to the database, but mysql doesn't have the correct configuration. For it to work correctly, you have to enter the phpMyAdmin pod, and create the database with de following command:
 
 - Create database
