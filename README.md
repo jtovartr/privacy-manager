@@ -111,7 +111,9 @@ There is the file [data.json](https://github.com/jtovartr/privacy-manager/blob/m
 In order to be able to use the field level encryption feature of MongoDB, a GPC service accout and Customer Master Key must be generated for use in the [priv-mongo.js](https://github.com/jtovartr/privacy-manager/blob/main/mounts/mongodb/prueba.js) file. To do this you can follow the links below.
 
 [GPC-service-account](https://www.mongodb.com/docs/manual/core/csfle/tutorials/gcp/gcp-automatic/#register-a-gcp-service-account)
+
 [GPC-customer-master-key](https://www.mongodb.com/docs/manual/core/csfle/tutorials/gcp/gcp-automatic/#create-a-gcp-customer-master-key)
+
 [GPC-create-dek](https://www.mongodb.com/docs/manual/core/csfle/tutorials/gcp/gcp-automatic/#create-a-data-encryption-key)
 
 ## Step 8
