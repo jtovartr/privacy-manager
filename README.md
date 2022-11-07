@@ -1,5 +1,4 @@
 # Privacy Manager system for IoT and Edge Computing
-A privacy system made for my Degree Final Project.
 
 # How to configure
 
