@@ -93,7 +93,7 @@ var config = {}
  */
 
 const privacyRulesPath = path.join(__dirname, 'politics')
-var politics = {} // Formato: politics[role].rules[i]
+var politics = {} // Format: politics[role].rules[i]
 var politicsAsRead = {}
 //updateRules()
 
@@ -138,7 +138,6 @@ app.get('/', async function(req, res) {
 		var processed_data = await processData(data)
 
 		res.send(processed_data)
-		//res.send(data)
 	} catch (error) {
 		console.log(error)
 	}
@@ -170,7 +169,6 @@ app.post('/', async function(req, res) {
 
 		if (access == 0) {
 			var respQuery = await enterData(req.body.data)
-			console.log(respQuery)
 			res.send(respQuery)
 		}
 		else {
@@ -207,7 +205,6 @@ app.delete('/', async function(req, res) {
 
 		if (access == 0) {
 			var respQuery = await deleteData(req.body.idToDelete)
-			console.log(respQuery)
 			res.send(respQuery)
 		}
 		else {
@@ -255,13 +252,11 @@ async function enterData(data) {
 	var data_split = data.split(', ')
 	var data_name = []
 	try {
-		console.log('*********************************************************')
 		var columns_name = await con.query('SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ?', 'personas')
 		for (var i=1; i<columns_name.length; i++) {
 			data_name.push(columns_name[i].COLUMN_NAME)
 
 		}
-		console.log(data_name)
 		var result = await con.query('INSERT INTO personas (' + data_name + ') VALUES (?,?,?,?,?,?,?,?,?)', data_split)
 	} catch (err) {
 		console.log(err)
@@ -404,7 +399,7 @@ async function querysAVistas(typeUser, queryUser) {
 			// the first element is deleted: SELECT
 			select_variables.shift()
 			
-			// Nos quedamos con los atributos de la politica
+			// We maintain the attributes of the policya
 			for (var j = 0; j < indexFrom_queryPolitics; j++) {
    				select_resource[j] = select_resource_aux[j]
    				select_resource[j] = select_resource[j].replace(',', '')
@@ -502,7 +497,6 @@ async function processData(data) {
 		else if (data[i].privacy_method == 'Generalization') {
 			//We call the generalize module
 			try {
-				//var response = await axios.get(gen, { httpsAgent: agentSSL })
 				var response = await axios.get(gen, {
 					params: {
 						sql: query
@@ -519,9 +513,7 @@ async function processData(data) {
 		}
 		else if (data[i].privacy_method == 'KAnonimity') {
 			//We call the KAnonimity module
-			try {	
-				//var response = await axios.get(gen, { httpsAgent: agentSSL })
-				
+			try {					
 				//The privatization method and the data type are passed as parameters
 				var response = await axios.get(arx, {
 					params: {
@@ -541,8 +533,6 @@ async function processData(data) {
 		else if (data[i].privacy_method == 'LDiversity') {
 			//We call the LDiversity module
 			try {
-				//var response = await axios.get(gen, { httpsAgent: agentSSL })
-				
 				//The privatization method and the data type are passed as parameters
 				var response = await axios.get(arx, {
 					params: {
@@ -563,8 +553,6 @@ async function processData(data) {
 		else if (data[i].privacy_method == 'TCloseness') {
 			//We call the TCloseness module
 			try {
-				//var response = await axios.get(gen, { httpsAgent: agentSSL })
-				
 				//The privatization method and the data type are passed as parameters
 				var response = await axios.get(arx, {
 					params: {
@@ -582,7 +570,6 @@ async function processData(data) {
 			}
 		}
 	console.log(query)
-	console.log('________________________________')
 	}
 
 	return processed_data
@@ -866,8 +853,6 @@ async function resetCount(index, method) {
 async function timePeriodAllowed(type, method) {
 	var exists = false
 
-	console.log()
-
 	//First we check if the parameter is defined in a rule or not.
 	//We have to make a chain of checks so that it does not give an error.
 	for (var i = 0; i < politics[type].rules.length; i++) {
@@ -914,10 +899,6 @@ async function timePeriodAllowed(type, method) {
 								periodsArray[j] = periodsArray[j].split(' - ')
 
 								//We compare the time
-								console.log('currentTime: ' + currentTimeHHMM)
-								console.log('first limit: ' + periodsArray[j][0])
-								console.log('second limit: ' + periodsArray[j][1])
-
 								if (currentTimeHHMM > periodsArray[j][0]) {
 									console.log('It is later than the first limit')
 								}

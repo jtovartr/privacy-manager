@@ -73,11 +73,9 @@ app.post('/', async function(req, res) {
 		jwt.verify(req.body.token, 'shhhhh', (err, decoded) => {
 			payload = decoded
     			if(err) {
-    				console.log("Session expired")
          			res.status(401).send('Session expired')
     			}
     			else {
-    				console.log('A token has been sent to me')
 				console.log('Payload: ' + JSON.stringify(payload))
 				res.status(200).send({ id: payload.id, type: payload.type })
     			}
@@ -108,7 +106,6 @@ app.post('/', async function(req, res) {
 		}
 	}
 	else {
-		console.log('No email or password entered')
 		console.log('req.body: ' + JSON.stringify(req.body))
 		res.status(400).send('No email or password entered')
 		return
@@ -149,8 +146,6 @@ async function checkPassword(email, password) {
         hast_calculated = bcrypt.hash(password, result[0].salt, function(err, hash) {
         	// returns hash
         	//We check if the password is correct
-        	console.log('hash_calculated: ' + hash)
-  		console.log('password_sql: : ' + result[0].password)
 		if (result[0].password != hash) {
 			console.log('The password is incorrect')
 			return 2

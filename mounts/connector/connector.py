@@ -38,9 +38,7 @@ def on_message(client, userdata, msg):
 
     # We check that all values have been entered
     print('len: ' + str(len(payloadTroceado)))
-    print()
     if (len(payloadTroceado) == 9):
-      print('Me meto en ID nuevo')
       sql = "INSERT INTO personas (name, age, lat, lon, job, salary, pulse, temperature, disease) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
       val = payloadTroceado
       try:
@@ -62,7 +60,6 @@ client.on_message = on_message
 # client.username_pw_set("manuel", password="manuel")
 
 # broker connection
-print("Me intento conectar")
 client.connect("mosquitto-broker.default.svc.cluster.local", 1883, 60)
 
 # Nos conectamos a la base de datos

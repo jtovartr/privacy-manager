@@ -194,7 +194,6 @@ def is_t_close(df, partition, sensitive_column, global_freqs, p=0.2):
 def script(sql_query):
 
     #connection to the database
-    #Este no tendría por que conectarse al master porque solo lee datos
     mydb = mysql.connector.connect(
     host="mysql-master.default.svc.cluster.local",
     port="3306",
@@ -203,19 +202,15 @@ def script(sql_query):
     database="test"
     )
 
-    #We tried to collect the data from mysql instead of csv
     #df = pd.read_csv("./data/k-anonymity/my-adult.all.txt", sep=", ", header=None, names=names, index_col=False, engine='python');
     df = pd.read_sql(sql_query, mydb)
-    print(df.head())
         
     for name in categorical:
         df[name] = df[name].astype('category')
 
     full_spans = get_spans(df, df.index)
-    print(full_spans)
 
     finished_partitions = partition_dataset(df, feature_columns, sensitive_column, full_spans, is_k_anonymous)
-    print(len(finished_partitions))
 
     indexes = build_indexes(df)
     column_x, column_y = feature_columns[:2]
@@ -232,8 +227,6 @@ def script(sql_query):
     print(dfn.sort_values(feature_columns+[sensitive_column]))
 
     finished_l_diverse_partitions = partition_dataset(df, feature_columns, sensitive_column, full_spans, lambda *args: is_k_anonymous(*args) and is_l_diverse(*args))
-
-    print(len(finished_l_diverse_partitions))
 
     column_x, column_y = feature_columns[:2]
     l_diverse_rects = get_partition_rects(df, finished_l_diverse_partitions, column_x, column_y, indexes, offsets=[0.0, 0.0])
@@ -260,20 +253,16 @@ def script(sql_query):
 
     finished_t_close_partitions = partition_dataset(df, feature_columns, sensitive_column, full_spans, lambda *args: is_k_anonymous(*args) and is_t_close(*args, global_freqs))
 
-    print(len(finished_t_close_partitions))
-
     dft = build_anonymized_dataset(df, finished_t_close_partitions, feature_columns, sensitive_column)
 
     # out is the string json
     out = dft.to_json(orient='index')
     
-    print('----------------DFT-------------------')
     print(dft.sort_values([column_x, column_y, sensitive_column]))
 
     column_x, column_y = feature_columns[:2]
     t_close_rects = get_partition_rects(df, finished_t_close_partitions, column_x, column_y, indexes, offsets=[0.0, 0.0])
 
-    print('----------------OUT-------------------')
     print(out)
 
     # pl.figure(figsize=(20,20))

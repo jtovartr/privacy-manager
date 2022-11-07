@@ -3,7 +3,7 @@ const { ClientEncryption } = require('mongodb-client-encryption');
 const http = require("http");
 var https = require('https')
 var express = require('express')
-var helmet = require('helmet') //Para HSTS, necessary to add
+var helmet = require('helmet') // HSTS, necessary to add
 var express = require('express')
 var body_parser = require('body-parser') //necessary to add
 const util = require('util') // To "promisify" the queries
@@ -39,8 +39,6 @@ const client = new MongoClient(connectionString, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
-
-console.log(client)
 
 // kms specification
 const provider = "gcp";

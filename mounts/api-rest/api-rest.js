@@ -86,7 +86,6 @@ app.get('/', async function(req, res) {
 
 	//Obtain the type of token sent to us
 	var result = await checkToken(req.query.token)
-	console.log(JSON.stringify(result))
 	console.log('result.id: ' + result.id, ' result.type: ' + result.type)
 	
 	if(result.id === undefined) {
