@@ -44,20 +44,20 @@ const client = new MongoClient(connectionString, {
 const provider = "gcp";
 
 // TODO: put correct credentials
-
-//const kmsProviders = {
-//  gcp: {
-//    email: /*iam email created*/,
-//    privateKey: /*privaty key*/ ,
-//  },
-//};
+// Example:
+const kmsProviders = {
+  gcp: {
+    email: "nicslab-958@privacymanager...", // IAM email
+    privateKey: "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC...", // Privaty Key
+  },
+};
 
 
 // TODO: put correct master key data
-// master key creation
+// master key creation example
 const masterKey = {
-  projectId: "privacymanager-352109",
-  location: "europe-southwest1",
+  projectId: "privacymanager...",
+  location: "europe...",
   keyRing: "keyring",
   keyName: "MasterKey",
 };
