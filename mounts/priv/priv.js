@@ -76,7 +76,7 @@ const port = 8082
 https.createServer(options, app).listen(port, () => console.log('HTTPS server listening on port ' + port))
 
 /* ===================================== Lectura configuracion ===================================== */
-const configPath = path.join(__dirname, 'politicas')
+const configPath = path.join(__dirname, 'politics')
 var config = {}
 //updateConfig()
 
@@ -92,7 +92,7 @@ var config = {}
  * and to put in the query that we make in the database only those that exist inside the view.
  */
 
-const privacyRulesPath = path.join(__dirname, 'politicas')
+const privacyRulesPath = path.join(__dirname, 'politics')
 var politics = {} // Formato: politics[role].rules[i]
 var politicsAsRead = {}
 //updateRules()
@@ -312,7 +312,7 @@ async function noise(queryJson, table, factor) {
 
 		//We should read the ontology, and depending on the type of variable it is, add the noise defined in the ontology
 
-		let rawdata = fs.readFileSync('ontologia/ontologia.json')
+		let rawdata = fs.readFileSync('ontology/ontology.json')
 		let ontology = JSON.parse(rawdata)
 
 		//We loop through the table row
