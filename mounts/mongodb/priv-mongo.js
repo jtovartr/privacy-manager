@@ -43,15 +43,6 @@ const client = new MongoClient(connectionString, {
 // kms specification
 const provider = "gcp";
 
-
-const kmsProviders = {
-  gcp: {
-    email: "nicslab-958@privacymanager-352109.iam.gserviceaccount.com",
-    privateKey: "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCulj2Hbc9/NEKSuUrhlX0FJPKt0rT775s7Q+PI7aC/7vZTtJNUZtXHv3LZ6mF5aFvRxi9Qqc6jP17jhqIzM1EJoy0YA4ChTchtxeTt8m3b6SdVrNZfeYcFt3ScWjh+pqP2Mi/uUUJEoajW26XYY7Jsu/x0JvVUtEbX7H2VIyOl7AyI2gq9e5IXqPEavk5Lbhj82RGaMITJtafRWAlo6M9rijpUpp18HqBJ7K43gyB7ctDm/y+nfHn2LejXv0HBaylD1z6p5puMgsEpbpLLvzolJBVzLht/pyk7mkwueh7MdB/gIgvBCZzt8C0Q6F/+knVmBHCXlWjRxqXvnXTZNCG3AgMBAAECggEAKB1wXNZf94/3/gOiT4wMMmrncgY4vKy1A9yZEbl8Fq3fHqOeuKV6WI/GYYjnxcAzXNOHWqbxynPMp0XvrgkMBUVfnqVrYGTheUufywbJtF5xwc9ZYI2pdyhMnIJkecFrai3k8oLsUZ29kETe6gYaYL6fBsdO1pwnrQRzZJmy3rQpdhqfLMQJOJn1vOlBjToPeK4O7WdNPxnDSgU0et80HC8J+l7wrKn6ew+TYE2+sC5XUBu8FadxYZGCLyUmOSeHCmsyT1YP72a5VfXxuedfueFGjuqggY5MKSEgTJJtzpvavstp8wM7Wa1qKAQfQo+KuXIQic8GD40WNi3midsg7QKBgQDeBAzx954ikpb2nXRII9Q5vxCTt6mz6fiM9Ru3t9VjZZH3Fj1Z98EM16gs7JuGpnBt96+oZZ7l6A3CGa5fpIiU0qhkLseRq+FCl1+DnewrP9L9tMp/6ZgNI9r82vc3Wlgl1k+aKp30wa1BmX42FHT59PZGzdQYjx1I+VxOFO6pwwKBgQDJT6GQBh1BVgKYi0N4lZ31DqYu5LC19J+cdTAhPUZWnyyuOFoZQJukT1+Wc5wpc9FXK+HUiMpkkIDWLNN/RqrvMORhI+la9hl+94d8mI891FeFGpIHUHrYiwWbi0KaLa4Y6sBM17C7U0osW6gozEHkYpVGHxIGZH1jIOgQ2U50/QKBgAbQAwGtwnl3HBDHNhk8mDeJaF3QBfISXOEeaFJT3sVlCXyWfx1yn8bgGzX9sKwKEWsebZJyQ9T0MO/iz9n5d4Nxj187nD4ZExlzAahNQUD2fWfxk0EnjtXgYsjdgzZ8nDXVBK5LXntzMfjQV/Ia4JgG70Ou7zItug1SMYXn2Ib3AoGBAJF6w5XyZTfvMUcN9T9yWEldQclHqVCFLMeDhLmwr2Ev/LkWrj3ri87NMZXnjGYEdbdaVgQiqqjMKN8eW+Vxq1vZ6GEu85exm7E+rqHjGjkjd/APyJISngRZSz8h/4quEk+dbkTZ5rUpNsQhpL9/BOtINvoKwBrwihCWGj7625D9AoGAWc0MmyPOxj4yMmDFwUOxQDWJFEY5VfW07jIykHBn2hBhEr4t0agaUcMCKglKgPeGalzz6GujHtzXNk/V3/F1rqJxHxtUgNaZN9eTu0MxOehp6Mtm00hVDxZIJrb+Ps5ZYdWmTw9swTWEBD3DZGHfdaZJ8v1GE9KVrEmeMzKIOdg=",
-  },
-};
-
-
 // TODO: put correct credentials
 
 //const kmsProviders = {
@@ -62,6 +53,7 @@ const kmsProviders = {
 //};
 
 
+// TODO: put correct master key data
 // master key creation
 const masterKey = {
   projectId: "privacymanager-352109",
